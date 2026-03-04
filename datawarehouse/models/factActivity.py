@@ -28,7 +28,7 @@ class FactActivity:
 
     def insert_many_records(self, objects):
         condition = """ ON CONFLICT (activity_id, actor_id, time_id)
-                        DO UPDATE NOTHING;
+                        DO NOTHING;
                     """
         self.db.insert_many_records(self.table_name, objects, condition)
 
