@@ -1,0 +1,16 @@
+services:
+  postgres_db:
+    image: postgres:16 # Use a specific version for stability, e.g., postgres:16
+    container_name: behaviour_learning_db
+    environment:
+      POSTGRES_USER: admin  
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: learning_behaviour
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Mount a named volume for data persistence
+    ports:
+      - "5432:5432" # Map the container's port 5432 to the host's port 5432
+
+volumes:
+  postgres_data:
+    driver: local # Define the named volume
