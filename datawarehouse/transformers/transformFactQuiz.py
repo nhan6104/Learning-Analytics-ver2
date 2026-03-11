@@ -140,7 +140,7 @@ class transformFactQuiz:
                 is_complete = statement.result.completion
             if statement.result.success is not None:
                 is_succeed = statement.result.success
-            duration = self.extractor.parse_duration(statement.result.duration)
+            duration = DataExtractor.parse_duration(statement.result.duration)
 
         # Refine flags based on verb if missing
         if 'completed' in verb_id and is_complete is None: is_complete = True
@@ -164,7 +164,8 @@ class transformFactQuiz:
             "end_time": timestamp,
             "score": total_score,
             "duration": duration,
-            "isCompleted": is_complete,
-            "isSuccessful": is_succeed,
+            "completion_status": is_complete,
+            "isSucceed": is_succeed,
             "time_id": time_id,
+            "context_id": kwargs.get("context_id", "")
         }

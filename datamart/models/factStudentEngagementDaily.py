@@ -16,7 +16,7 @@ class FactDailyStudentEngagement:
             total_resource_access INT,
             total_quiz_attempt INT,
             engagement_score INT,
-            active_learning_index INT,
+            active_learning_index INT
             """
         
         self.db.create_table(self.table_name, schema)

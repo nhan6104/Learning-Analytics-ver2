@@ -30,9 +30,9 @@ class FactSession:
     def insert_many_records(self, objects):
         condition = f"""ON CONFLICT (session_id)
                         DO UPDATE SET
+                            start_time = EXCLUDED.start_time,
                             end_time = EXCLUDED.end_time,
-                            session_duration = EXTRACT(EPOCH FROM (EXCLUDED.end_time - {self.schema_name}.fact_session.start_time)),
-                            context_id = EXCLUDED.context_id
-                        WHERE {self.schema_name}.fact_session.end_time < EXCLUDED.end_time;
+                            session_duration = EXCLUDED.session_duration,
+                            context_id = EXCLUDED.context_id;
                     """
         self.db.insert_many_records(self.table_name, objects, condition)

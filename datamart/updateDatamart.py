@@ -1,12 +1,12 @@
-from models.dimActor import DimActor
-from models.dimTime import DimTime
-# from models.dimResource import DimResource
-from models.dimCourse import DimCourse
-from models.factBehaviorOutcomeCorrelation import FactBehaviorOutcomeCorrelation
-from models.factClassEngagementDistribution import FactClassEngagementDistribution
-from models.factStudentCourseLifecycle import FactStudentCourseLifeCyle
-from models.factStudentEngagementDaily import FactDailyStudentEngagement
-from models.factStudentRiskWeekly import FactRiskStudentWeekly
+from .models.dimActor import DimActor
+from .models.dimTime import DimTime
+# from .models.dimResource import DimResource
+from .models.dimCourse import DimCourse
+from .models.factBehaviorOutcomeCorrelation import FactBehaviorOutcomeCorrelation
+from .models.factClassEngagementDistribution import FactClassEngagementDistribution
+from .models.factStudentCourseLifecycle import FactStudentCourseLifeCyle
+from .models.factStudentEngagementDaily import FactDailyStudentEngagement
+from .models.factStudentRiskWeekly import FactRiskStudentWeekly
 
 class DataMarter:
     def __init__(self):

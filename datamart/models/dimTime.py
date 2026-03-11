@@ -9,7 +9,7 @@ class DimTime:
 
     def create_table(self):
         schema = """
-            time_id VARCHAR(255) ,
+            time_id VARCHAR(255) PRIMARY KEY,
             date INT ,
             month INT ,
             year INT ,

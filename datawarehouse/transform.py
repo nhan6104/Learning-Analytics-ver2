@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from datawarehouse.models.xAPI_model import Statement
 from datawarehouse.transformers.transformDimActor import transformDimActor
 from datawarehouse.transformers.transformDimContext import transformDimContext
@@ -80,6 +81,36 @@ class DataTransformer:
                 transformed_statements["fact_quiz"].append(fact_quiz)
             if fact_question:
                 transformed_statements["fact_question"].append(fact_question)
+
+        # Post-process: calculate session_duration from first to last event per session
+        if transformed_statements["fact_session"]:
+            session_timestamps = {}
+            for s in transformed_statements["fact_session"]:
+                sid = s["session_id"]
+                ts = s["start_time"]  # currently = event timestamp
+                if isinstance(ts, str):
+                    ts = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                if sid not in session_timestamps:
+                    session_timestamps[sid] = {"min": ts, "max": ts}
+                else:
+                    if ts < session_timestamps[sid]["min"]:
+                        session_timestamps[sid]["min"] = ts
+                    if ts > session_timestamps[sid]["max"]:
+                        session_timestamps[sid]["max"] = ts
+
+            # Deduplicate fact_session by session_id and fill in start/end/duration
+            seen_sessions = {}
+            for s in transformed_statements["fact_session"]:
+                sid = s["session_id"]
+                if sid not in seen_sessions:
+                    start = session_timestamps[sid]["min"]
+                    end = session_timestamps[sid]["max"]
+                    duration = int((end - start).total_seconds())
+                    s["start_time"] = start
+                    s["end_time"] = end
+                    s["session_duration"] = duration
+                    seen_sessions[sid] = s
+            transformed_statements["fact_session"] = list(seen_sessions.values())
 
         logger.info("Data transformation process completed")
         return transformed_statements

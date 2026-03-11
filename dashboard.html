@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>T&agrave;i li&#x1ec7;u Dashboard Ph&acirc;n t&iacute;ch D&#x1eef; li&#x1ec7;u &lpar;Datamart Analytics&rpar;</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="tài-liệu-dashboard-phân-tích-dữ-liệu-datamart-analytics">Tài liệu Dashboard Phân tích Dữ liệu (Datamart Analytics)</h1>
+<h2 id="1-tổng-quan">1. Tổng quan</h2>
+<p><strong>Microlearning Analytics Dashboard</strong> là giao diện trực quan hóa dữ liệu được thiết kế để hiển thị trực tiếp các thông số từ kho dữ liệu (Datamart) của hệ thống Moodle. Dashboard này không sử dụng các thuật toán dự báo phức tạp, thay vào đó tập trung vào tính trung thực và minh bạch của dữ liệu học tập gốc.</p>
+<hr>
+<h2 id="2-nguồn-dữ-liệu--các-chỉ-số-chính">2. Nguồn dữ liệu &amp; Các chỉ số chính</h2>
+<h3 id="-21-dữ-liệu-hoạt-động-hàng-ngày-fact_daily_student_engagement">📊 2.1. Dữ liệu Hoạt động Hàng ngày (<code>fact_daily_student_engagement</code>)</h3>
+<p>Hiển thị chi tiết nỗ lực học tập của từng học viên theo từng ngày.</p>
+<ul>
+<li><strong>Tổng số phút (Active Minutes)</strong>: Thời gian thực tế học viên thao tác trên hệ thống.</li>
+<li><strong>Điểm tương tác (Engagement Score)</strong>: Chỉ số tổng hợp về mức độ hoạt động trong ngày, được tính theo công thức trọng số:
+<ul>
+<li><strong>Thời gian học</strong>: 1 điểm cho mỗi phút (tối đa 60 điểm).</li>
+<li><strong>Tài liệu</strong>: 1 điểm cho mỗi lần truy cập tài liệu/resource (tối đa 20 điểm).</li>
+<li><strong>Bài tập/Quiz</strong>: 2 điểm cho mỗi lần làm bài (tối đa 20 điểm).</li>
+<li><strong>=&gt; Tổng cộng tối đa</strong>: 100 điểm/ngày.</li>
+</ul>
+</li>
+<li><strong>Mục đích</strong>: Giúp học viên theo dõi nhịp điệu học tập cá nhân và mức độ hoàn thành mục tiêu hàng ngày.</li>
+</ul>
+<h3 id="️-22-dữ-liệu-rủi-ro--hiệu-suất-fact_risk_student_weekly">⚠️ 2.2. Dữ liệu Rủi ro &amp; Hiệu suất (<code>fact_risk_student_weekly</code>)</h3>
+<p>Tổng hợp dữ liệu theo tuần để đánh giá tình trạng học tập.</p>
+<ul>
+<li><strong>Tỷ lệ Rủi ro (Risk Level)</strong>: Đánh giá dựa trên mức độ tham gia và hoàn thành bài tập.</li>
+<li><strong>Xác suất bỏ học (Dropout %)</strong>: Con số thô phản ánh nguy cơ học viên ngừng khóa học.</li>
+<li><strong>Mục đích</strong>: Giúp giảng viên lọc nhanh danh sách những học viên cần chú ý.</li>
+</ul>
+<h3 id="-23-dữ-liệu-phân-phối--xu-hướng-lớp-fact_class_engagement_distribution">📈 2.3. Dữ liệu Phân phối &amp; Xu hướng lớp (<code>fact_class_engagement_distribution</code>)</h3>
+<p>Cái nhìn tổng thể về toàn bộ lớp học.</p>
+<ul>
+<li><strong>Điểm trung bình lớp</strong>: Mức tương tác bình quân của tất cả học viên.</li>
+<li><strong>Phân loại (Engagement Mix)</strong>: Thống kê số lượng học viên thuộc các nhóm Tích cực, Trung bình, Thấp, và Thụ động.</li>
+<li><strong>Mục đích</strong>: Đánh giá sức sống và sự đồng đều của lớp học qua từng tuần.</li>
+</ul>
+<h3 id="-24-dữ-liệu-vòng-đời-học-tập-fact_student_course_lifecycle">🔄 2.4. Dữ liệu Vòng đời học tập (<code>fact_student_course_lifecycle</code>)</h3>
+<p>Theo dõi lộ trình từ lúc bắt đầu đến khi kết thúc.</p>
+<ul>
+<li><strong>Tiến độ (%)</strong>: Phần trăm module đã hoàn thành.</li>
+<li><strong>Trạng thái</strong>: Hoạt động, Đã hoàn thành, hoặc Ngừng học.</li>
+<li><strong>Ngày hoạt động cuối</strong>: Thời điểm gần nhất học viên tương tác với hệ thống.</li>
+</ul>
+<hr>
+<h2 id="3-các-thành-phần-giao-diện">3. Các thành phần giao diện</h2>
+<h3 id="dành-cho-giảng-viên-teacher-view">Dành cho Giảng viên (Teacher View)</h3>
+<ul>
+<li><strong>Thẻ chỉ số tổng quát</strong>: Tổng số học viên, Điểm tương tác trung bình, và Cảnh báo học dồn.</li>
+<li><strong>Biểu đồ xu hướng lớp</strong>: Theo dõi sự biến động mức độ tương tác của cả lớp qua các tuần.</li>
+<li><strong>Bảng chi tiết học viên</strong>: Hiển thị danh sách học viên kèm Tiến độ, Rủi ro, và Ngày hoạt động cuối cùng.</li>
+<li><strong>Biểu đồ phân loại</strong>: Tỷ lệ các nhóm học tập trong lớp.</li>
+</ul>
+<h3 id="dành-cho-người-học-student-view">Dành cho Người học (Student View)</h3>
+<ul>
+<li><strong>Thẻ cá nhân</strong>: Xem nhanh tiến độ, trạng thái hiện tại và tổng thời gian đã học.</li>
+<li><strong>Biểu đồ lịch sử</strong>: Theo dõi điểm tương tác cá nhân so với thời gian.</li>
+<li><strong>Nhật ký hoạt động</strong>: Danh sách các ngày học gần nhất kèm số phút tương tác cụ thể.</li>
+</ul>
+<hr>
+<h2 id="4-công-nghệ-sử-dụng">4. Công nghệ sử dụng</h2>
+<ul>
+<li><strong>Frontend</strong>: Tailwind CSS (UI tối giản, hiện đại).</li>
+<li><strong>Visualization</strong>: ApexCharts (Biểu đồ tương tác).</li>
+<li><strong>Data API</strong>: Truy vấn trực tiếp từ PostgreSQL thông qua PHP AJAX.</li>
+</ul>
+<hr>
+<p><em>Ghi chú: Mọi số liệu trên giao diện này đều được lấy trực tiếp từ các bảng Fact và Dimension trong schema <code>datamart</code>. Nếu dữ liệu không hiển thị, vui lòng kiểm tra lại tiến trình ETL (Trích xuất và nạp dữ liệu).</em></p>
+
+            
+            
+        </body>
+        </html>

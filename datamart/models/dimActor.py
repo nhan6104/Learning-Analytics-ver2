@@ -10,7 +10,7 @@ class DimActor:
     def create_table(self):
         schema = """
             actor_id VARCHAR(255) PRIMARY KEY,
-            actor_name VARCHAR(255),
+            actor_name VARCHAR(255)
             """
         
         self.db.create_table(self.table_name, schema)

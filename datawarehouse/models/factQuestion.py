@@ -12,8 +12,8 @@ class FactQuestion:
         schema = f"""
             question_id VARCHAR(255) ,
             quiz_attempt_id VARCHAR(255) ,
-            selected_answer INT ,
-            is_correct INT ,
+            selected_answer TEXT ,
+            is_correct BOOLEAN ,
             quiz_id VARCHAR(255) ,
             start_time TIMESTAMP ,
             attempt_no INT,
@@ -26,9 +26,10 @@ class FactQuestion:
     def insert_many_records(self, objects):
         condition = """ ON CONFLICT (question_id, quiz_attempt_id)
                         DO UPDATE SET
-                            score = COALESCE(EXCLUDED.score, fact_question.score),
-                            max_score = COALESCE(EXCLUDED.max_score, fact_question.max_score),
+                            selected_answer = COALESCE(EXCLUDED.selected_answer, fact_question.selected_answer),
                             is_correct = COALESCE(EXCLUDED.is_correct, fact_question.is_correct),
-                            duration_ms = COALESCE(EXCLUDED.duration_ms, fact_question.duration_ms)
+                            quiz_id = COALESCE(EXCLUDED.quiz_id, fact_question.quiz_id),
+                            start_time = COALESCE(EXCLUDED.start_time, fact_question.start_time),
+                            attempt_no = COALESCE(EXCLUDED.attempt_no, fact_question.attempt_no)
                     """
         self.db.insert_many_records(self.table_name, objects, condition) 

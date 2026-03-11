@@ -17,7 +17,9 @@ class PostgresDB:
                 port=os.getenv("PGSQL_PORT"),
                 dbname=os.getenv("PGSQL_DBNAME"),
                 user=os.getenv("PGSQL_USER"),
-                password=os.getenv("PGSQL_PASSWORD")
+                password=os.getenv("PGSQL_PASSWORD"),
+                sslmode=os.getenv("PGSQL_SSL_MODE", "prefer"),
+                sslrootcert=os.getenv("PGSQL_SSL_ROOT_CERT")
             )
 
             return connection
@@ -52,9 +54,12 @@ class PostgresDB:
 
     def execute_query(self, query, params=None):
         connection = self.get_connection()
+        result = None
         with connection.cursor() as cursor:
             cursor.execute(query, params)
-            result = cursor.fetchall()
+            if cursor.description:
+                result = cursor.fetchall()
+            connection.commit()
 
         connection.close()
 

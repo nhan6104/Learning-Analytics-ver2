@@ -45,6 +45,7 @@ class Result(BaseModel):
     completion: Optional[bool] = None
     duration: Optional[str] = None
     response: Optional[str] = None
+    extensions: Optional[Dict[str, Any]] = None
 
 
 class ContextActivity(BaseModel):
