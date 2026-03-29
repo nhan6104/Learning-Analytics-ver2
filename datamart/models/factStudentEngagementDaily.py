@@ -12,11 +12,10 @@ class FactDailyStudentEngagement:
             student_key VARCHAR(255),
             course_key INT,
             date_key VARCHAR(255),
-            total_active_minutes INT,
             total_resource_access INT,
             total_quiz_attempt INT,
-            engagement_score INT,
-            active_learning_index INT
+            total_active_minutes INT,
+            engagement_score INT
             """
         
         self.db.create_table(self.table_name, schema)

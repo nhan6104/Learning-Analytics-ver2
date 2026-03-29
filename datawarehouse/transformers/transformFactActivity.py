@@ -25,10 +25,19 @@ class transformFactActivity:
             return res
         
 
-        activityId = statement.object.id.split('/')       
+        activityId = statement.object.id.split('/')
+        if len(activityId) < 2:
+             return res
+
         activity = activityId[-2]
-        resource = activityId[-1].split('.')[0]
-        idResource = activityId[-1].split('=')[1]
+        last_part = activityId[-1]
+        
+        resource = last_part.split('.')[0]
+        
+        if '=' in last_part:
+            idResource = last_part.split('=')[1]
+        else:
+            idResource = last_part
 
         activity_id = activity + '_' + resource + '_' + idResource
 
@@ -75,10 +84,19 @@ class transformFactActivity:
             res.append(activityEl)
             offset = 0
             for el in  statement.context.contextActivities.parent:
-                parentId = el.id.split('/')       
+                parentId = el.id.split('/')
+                if len(parentId) < 2:
+                    offset += 1
+                    continue
+                                    
                 parentActivity = parentId[-2]
-                parentResource = parentId[-1].split('.')[0]
-                parentIdResource = parentId[-1].split('=')[1]
+                parentLastPart = parentId[-1]
+                parentResource = parentLastPart.split('.')[0]
+                
+                if '=' in parentLastPart:
+                    parentIdResource = parentLastPart.split('=')[1]
+                else:
+                    parentIdResource = parentLastPart
                 parent_activity_id = parentActivity + '_' + parentResource + '_' + parentIdResource
 
                 parent_activity_type = ""

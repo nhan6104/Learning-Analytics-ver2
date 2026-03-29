@@ -34,11 +34,11 @@ class FactQuiz:
         condition = """ ON CONFLICT (quiz_attempt_id)
                         DO UPDATE SET
                             score = COALESCE(EXCLUDED.score, fact_quiz.score),
-                            quiz_id = COALESCE(EXCLUDED.quiz_id, fact_quiz.quiz_id),
+                            quiz_id = EXCLUDED.quiz_id,
                             completion_status = COALESCE(EXCLUDED.completion_status, fact_quiz.completion_status),
                             isSucceed = COALESCE(EXCLUDED.isSucceed, fact_quiz.isSucceed),
                             duration = COALESCE(EXCLUDED.duration, fact_quiz.duration),
-                            attempt_no = COALESCE(EXCLUDED.attempt_no, fact_quiz.attempt_no),
+                            attempt_no = EXCLUDED.attempt_no,
                             end_time = CASE
                                 WHEN EXCLUDED.completion_status = TRUE THEN EXCLUDED.end_time
                                 ELSE fact_quiz.end_time

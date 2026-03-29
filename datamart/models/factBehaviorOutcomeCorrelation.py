@@ -12,10 +12,8 @@ class FactBehaviorOutcomeCorrelation:
             course_key VARCHAR(255),
             week_of_year INT,
             year INT,
-            correlation_time_on_task_pass INT,
             correlation_active_learning_score INT,
             correlation_cram_failure INT,
-            avg_time_on_task DECIMAL(5,2),
             avg_final_score DECIMAL(5,2),
             cram_student_count INT            
             """

@@ -81,6 +81,23 @@ class DataTransformer:
                 transformed_statements["fact_quiz"].append(fact_quiz)
             if fact_question:
                 transformed_statements["fact_question"].append(fact_question)
+                # Ensure parent quiz exists (Rich Upsert)
+                # Create quiz record with NULL scores - the upsert logic will preserve
+                # existing scores from "completed" statements
+                transformed_statements["fact_quiz"].append({
+                    "quiz_attempt_id": fact_question.get("quiz_attempt_id"),
+                    "quiz_id": fact_question.get("quiz_id"),
+                    "attempt_no": fact_question.get("attempt_no"),
+                    "actor_id": dim_actor.get("actor_id"),
+                    "start_time": fact_question.get("start_time"),
+                    "end_time": fact_question.get("start_time"),
+                    "score": None,  # Will not overwrite existing scores (COALESCE in upsert)
+                    "duration": None,
+                    "completion_status": None,
+                    "isSucceed": None,
+                    "time_id": kwargs.get("time_id", ""),
+                    "context_id": kwargs.get("context_id", "")
+                })
 
         # Post-process: calculate session_duration from first to last event per session
         if transformed_statements["fact_session"]:

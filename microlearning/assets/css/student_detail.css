@@ -1,0 +1,48 @@
+/**
+ * Student Drilldown - Styles
+ * Extracted from student_detail.php for better maintainability
+ */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+}
+
+.breadcrumb-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+@media print {
+    .breadcrumb-nav, 
+    #btn-refresh-data, 
+    #btn-export-print, 
+    #last-updated { 
+        display: none !important; 
+    }
+    body { 
+        background: white !important; 
+    }
+    .card { 
+        box-shadow: none !important; 
+        break-inside: avoid; 
+    }
+}
+
+@media (max-width: 767px) {
+    #student-sankey svg { 
+        min-height: 280px; 
+    }
+}

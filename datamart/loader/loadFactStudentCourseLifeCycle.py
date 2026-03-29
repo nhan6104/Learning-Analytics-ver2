@@ -1,8 +1,20 @@
+"""
+Load Fact Student Course Lifecycle V2
+
+This V2 loader implements safe milestone calculation with bounds checking.
+
+Fixes Bug 2: Milestone Calculation
+- Adds bounds checking before accessing completion list indices
+- Returns NULL for milestones not yet reached
+- Prevents IndexError crashes
+"""
+
 from utils.moodle_db_utils import moodle_db
 from utils.pgsql_utils import db
 from datetime import datetime
 
-class LoadFactStudentCourseLifeCycle:
+
+class LoadFactStudentCourseLifeCycle_v2:
     def __init__(self):
         self.datamart_name = "datamart"
         self.moodle_db = moodle_db
@@ -16,11 +28,13 @@ class LoadFactStudentCourseLifeCycle:
         for course in courses:
             course_key = course[0]
             total_modules = course[1]
+            
+            # Handle edge cases
             if not total_modules or total_modules == 0:
+                print(f"Skipping course {course_key}: total_modules is 0 or NULL")
                 continue
 
             # Fetch completion data from Moodle for this course
-            # We want all completions ordered by time to identify milestones
             moodle_query = """
                 SELECT 
                     cmc.userid as student_key,
@@ -43,19 +57,8 @@ class LoadFactStudentCourseLifeCycle:
             # 3. Get last activity info from Datamart
             activity_query = f"""
                 SELECT 
-                    student_key, 
-                    MAX(date_key) as last_date
-                FROM {self.datamart_name}.fact_daily_student_engagement
-                WHERE course_key = %s
-                GROUP BY student_key
-            """
-            # Need to fix: date_key in our case is time_id (e.g. M202622391)
-            # This is hard to compare as a date directly. 
-            # Better to join with dim_time to get actual date.
-            activity_query = f"""
-                SELECT 
                     f.student_key, 
-                    MAX(CAST(CONCAT(t.year, '-', t.month, '-', t.date) AS DATE)) as last_activity_date
+                    MAX(CAST(CONCAT(t.year, '-', LPAD(t.month::TEXT, 2, '0'), '-', LPAD(t.date::TEXT, 2, '0')) AS DATE)) as last_activity_date
                 FROM {self.datamart_name}.fact_daily_student_engagement f
                 JOIN {self.datamart_name}.dim_time t ON f.date_key = t.time_id
                 WHERE f.course_key = %s
@@ -65,31 +68,77 @@ class LoadFactStudentCourseLifeCycle:
             student_activities = {str(row[0]): row[1] for row in recent_activities}
 
             # 4. Calculate facts for each student
-            # We iterate over students found in completions or activity
             all_students = set(student_completions.keys()) | set(student_activities.keys())
             
             records = []
             for s_key in all_students:
                 s_completions = student_completions.get(s_key, [])
                 comp_count = len(s_completions)
-                progress_pct = int((comp_count / total_modules) * 100)
+                progress_pct = int((comp_count / total_modules) * 100) if total_modules > 0 else 0
                 
-                # Milestones
-                m25 = datetime.fromtimestamp(s_completions[int(total_modules * 0.25) - 1]).date() if comp_count >= total_modules * 0.25 else None
-                m50 = datetime.fromtimestamp(s_completions[int(total_modules * 0.50) - 1]).date() if comp_count >= total_modules * 0.50 else None
-                m75 = datetime.fromtimestamp(s_completions[int(total_modules * 0.75) - 1]).date() if comp_count >= total_modules * 0.75 else None
-                comp_date = datetime.fromtimestamp(s_completions[-1]).date() if progress_pct >= 100 else None
+                # V2: Safe milestone calculation with bounds checking
+                # Calculate milestone indices
+                milestone_25_index = int(total_modules * 0.25) - 1 if total_modules > 0 else -1
+                milestone_50_index = int(total_modules * 0.50) - 1 if total_modules > 0 else -1
+                milestone_75_index = int(total_modules * 0.75) - 1 if total_modules > 0 else -1
                 
+                # Ensure indices are non-negative
+                milestone_25_index = max(0, milestone_25_index)
+                milestone_50_index = max(0, milestone_50_index)
+                milestone_75_index = max(0, milestone_75_index)
+                
+                # Safe access with bounds checking
+                m25 = None
+                if comp_count > milestone_25_index and milestone_25_index >= 0:
+                    try:
+                        m25 = datetime.fromtimestamp(s_completions[milestone_25_index]).date()
+                    except (IndexError, ValueError, OSError) as e:
+                        print(f"Warning: Could not calculate 25% milestone for student {s_key}: {e}")
+                        m25 = None
+                
+                m50 = None
+                if comp_count > milestone_50_index and milestone_50_index >= 0:
+                    try:
+                        m50 = datetime.fromtimestamp(s_completions[milestone_50_index]).date()
+                    except (IndexError, ValueError, OSError) as e:
+                        print(f"Warning: Could not calculate 50% milestone for student {s_key}: {e}")
+                        m50 = None
+                
+                m75 = None
+                if comp_count > milestone_75_index and milestone_75_index >= 0:
+                    try:
+                        m75 = datetime.fromtimestamp(s_completions[milestone_75_index]).date()
+                    except (IndexError, ValueError, OSError) as e:
+                        print(f"Warning: Could not calculate 75% milestone for student {s_key}: {e}")
+                        m75 = None
+                
+                # Completion date - only if 100% complete
+                comp_date = None
+                if comp_count >= total_modules and len(s_completions) > 0:
+                    try:
+                        comp_date = datetime.fromtimestamp(s_completions[-1]).date()
+                    except (IndexError, ValueError, OSError) as e:
+                        print(f"Warning: Could not calculate completion date for student {s_key}: {e}")
+                        comp_date = None
+                
+                # Last activity and days since
                 last_act = student_activities.get(s_key)
-                days_since = (datetime.now().date() - last_act).days if last_act else None
+                days_since = None
+                if last_act:
+                    try:
+                        days_since = (datetime.now().date() - last_act).days
+                    except Exception as e:
+                        print(f"Warning: Could not calculate days_since for student {s_key}: {e}")
+                        days_since = None
                 
+                # Status determination
                 status = "Active"
                 dropout_date = None
                 if progress_pct >= 100:
                     status = "Completed"
                 elif days_since and days_since > 30:
                     status = "Dropout"
-                    dropout_date = last_act # Approximation
+                    dropout_date = last_act
 
                 records.append((
                     s_key, int(course_key), m25, m50, m75, comp_date,
@@ -118,7 +167,11 @@ class LoadFactStudentCourseLifeCycle:
                         days_since_last_activity = EXCLUDED.days_since_last_activity,
                         last_activity_date = EXCLUDED.last_activity_date
                 """
-                # We need a unique constraint for ON CONFLICT to work
-                # Let's check if the table has one
                 for rec in records:
-                    db.execute_query(insert_query, rec)
+                    try:
+                        db.execute_query(insert_query, rec)
+                    except Exception as e:
+                        print(f"Error inserting record for student {rec[0]}, course {rec[1]}: {e}")
+                        continue
+        
+        print("Successfully loaded FactStudentCourseLifeCycle V2 with safe milestone calculation.")

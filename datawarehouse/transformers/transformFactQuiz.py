@@ -1,3 +1,4 @@
+import re
 import logging
 from utils.dataExtractorUtils import DataExtractor
 from utils.moodle_db_utils import moodle_db
@@ -10,18 +11,66 @@ class transformFactQuiz:
         self.db = moodle_db
     
 
-    def _get_quiz_metadata(self, cmid, actor_id):
-        """Fetch max_score, attempt_no, quiz_id and attempt_id from Moodle"""
+    def _extract_attempt_from_xapi(self, statement) -> tuple:
+        """
+        Extract attempt_no and attempt_id from xAPI statement URLs
+        
+        Priority:
+        1. Extract from object.id (main URL)
+        2. Extract from contextActivities (parent, grouping, etc.)
+        
+        Returns: (attempt_id, attempt_no)
+        """
+        attempt_id = None
+        attempt_no = None
+        
+        # Collect all URLs to check
+        urls = [statement.object.id]
+        if statement.context and statement.context.contextActivities:
+            ca = statement.context.contextActivities
+            for attr in ['parent', 'grouping', 'category', 'other']:
+                activities = getattr(ca, attr, None)
+                if activities:
+                    urls.extend([p.id for p in activities])
+        
+        # Try to extract attempt from URLs
+        for url in urls:
+            # Pattern 1: attempt=123
+            match = re.search(r'attempt[=:](\d+)', url, re.IGNORECASE)
+            if match:
+                attempt_id = int(match.group(1))
+                # If we find attempt in URL, we can infer attempt_no
+                # Usually attempt_id in Moodle corresponds to the attempt number
+                # But we'll try to get the actual attempt_no from Moodle later
+                break
+        
+        return attempt_id, attempt_no
+    
+    def _get_quiz_metadata(self, cmid, actor_id, statement=None):
+        """
+        Fetch max_score, attempt_no, quiz_id and attempt_id
+        
+        Priority:
+        1. Extract attempt_id from xAPI statement (fast, no DB query)
+        2. Query Moodle database (fallback)
+        """
         max_score = None
         attempt_no = None
         quiz_id = None
         attempt_id = None
         
+        # STEP 1: Try to extract attempt from xAPI first
+        if statement:
+            xapi_attempt_id, xapi_attempt_no = self._extract_attempt_from_xapi(statement)
+            if xapi_attempt_id:
+                attempt_id = xapi_attempt_id
+                logger.debug(f"Extracted attempt_id from xAPI: {attempt_id}")
+        
         if not cmid:
-            return None, None, None, None
+            return None, None, None, attempt_id
             
         try:
-            
+            # STEP 2: Get quiz_id from cmid
             get_quiz_instance_id_query = """
                     SELECT cm.instance as quiz_id, q.grade as max_score
                     FROM mdl_course_modules cm
@@ -32,23 +81,59 @@ class transformFactQuiz:
             res = self.db.inquiry_query(get_quiz_instance_id_query, params)
 
             if res:
-                # max_score = res['max_score']
                 quiz_id = res[0]['quiz_id']
-                if actor_id:
-                    get_attempt_info_query = """
-                            SELECT id as attempt_id, attempt as attempt_no 
+                
+                # STEP 3: If we have attempt_id from xAPI, get attempt_no from Moodle
+                if attempt_id and actor_id:
+                    get_attempt_no_query = """
+                            SELECT attempt as attempt_no 
                             FROM mdl_quiz_attempts 
-                            WHERE quiz = %s AND userid = (
-                                SELECT id FROM mdl_user WHERE username = %s OR id = %s
-                            )
-                            ORDER BY attempt DESC LIMIT 1
+                            WHERE id = %s AND quiz = %s
                         """
-                    params = (quiz_id, actor_id, actor_id)
+                    params = (attempt_id, quiz_id)
+                    att_res = self.db.inquiry_query(get_attempt_no_query, params)
+                    
+                    if att_res:
+                        attempt_no = att_res[0]['attempt_no']
+                        logger.debug(f"Got attempt_no from Moodle: {attempt_no}")
+                
+                # STEP 4: Fallback - Query by actor_id if no attempt_id from xAPI
+                elif actor_id and not attempt_id:
+                    # Try to convert actor_id to int for numeric comparison
+                    try:
+                        actor_id_int = int(actor_id)
+                        get_attempt_info_query = """
+                                SELECT id as attempt_id, attempt as attempt_no 
+                                FROM mdl_quiz_attempts 
+                                WHERE quiz = %s AND userid IN (
+                                    SELECT id FROM mdl_user 
+                                    WHERE username = %s 
+                                       OR id = %s
+                                       OR id = %s
+                                )
+                                ORDER BY attempt DESC LIMIT 1
+                            """
+                        params = (quiz_id, actor_id, actor_id, actor_id_int)
+                    except (ValueError, TypeError):
+                        # actor_id is not numeric, only try username match
+                        get_attempt_info_query = """
+                                SELECT id as attempt_id, attempt as attempt_no 
+                                FROM mdl_quiz_attempts 
+                                WHERE quiz = %s AND userid IN (
+                                    SELECT id FROM mdl_user 
+                                    WHERE username = %s 
+                                       OR id = %s
+                                )
+                                ORDER BY attempt DESC LIMIT 1
+                            """
+                        params = (quiz_id, actor_id, actor_id)
+                    
                     att_res = self.db.inquiry_query(get_attempt_info_query, params)
                     
                     if att_res:
                         attempt_id = att_res[0]['attempt_id']
                         attempt_no = att_res[0]['attempt_no']
+                        logger.debug(f"Got attempt from Moodle query: id={attempt_id}, no={attempt_no}")
 
 
             # mysql_conn = self.db_manager.get_mysql_connection()
@@ -147,8 +232,9 @@ class transformFactQuiz:
         if 'passed' in verb_id and is_succeed is None: is_succeed = True
         if 'failed' in verb_id and is_succeed is None: is_succeed = False
 
-        # Fetch max_score, attempt_no, quiz_id, and attempt_id from Moodle
-        max_score, attempt_no, quiz_id, m_attempt_id = self._get_quiz_metadata(cmid, actor_id)
+        # Fetch max_score, attempt_no, quiz_id, and attempt_id
+        # Priority: xAPI extraction first, then Moodle query
+        max_score, attempt_no, quiz_id, m_attempt_id = self._get_quiz_metadata(cmid, actor_id, statement)
 
         # Map quiz_attempt_id to Moodle attempt id if available
         if m_attempt_id:

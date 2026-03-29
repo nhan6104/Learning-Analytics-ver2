@@ -25,20 +25,23 @@ class LoadDimResource:
                     WHEN m.name = 'feedback' THEN (SELECT name FROM mdl_feedback WHERE id = cm.instance)
                     ELSE m.name
                 END as resource_name,
-                cm.course as course_key
+                cm.course as course_key,
+                cs.id as section_id
             FROM mdl_course_modules cm
             JOIN mdl_modules m ON cm.module = m.id
+            JOIN mdl_course_sections cs ON cm.section = cs.id
         """
         resources = self.moodle_db.inquiry_query(query)
         
         for res in resources:
             insert_query = f"""
-                INSERT INTO {self.datamart_name}.dim_resource (resource_key, resource_name, resource_type, course_key)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO {self.datamart_name}.dim_resource (resource_key, resource_name, resource_type, section_key, course_key)
+                VALUES (%s, %s, %s, %s, %s)
                 ON CONFLICT (resource_key) DO UPDATE SET
                     resource_name = EXCLUDED.resource_name,
                     resource_type = EXCLUDED.resource_type,
+                    section_key = EXCLUDED.section_key,
                     course_key = EXCLUDED.course_key
             """
-            db.execute_query(insert_query, (str(res['resource_key']), res['resource_name'], res['resource_type'], str(res['course_key'])))
+            db.execute_query(insert_query, (str(res['resource_key']), res['resource_name'], res['resource_type'], str(res['section_id']), str(res['course_key'])))
     
