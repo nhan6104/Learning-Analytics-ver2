@@ -1,6 +1,6 @@
 from utils.pgsql_utils import db
 
-class LoadFactStudentEngagementDepthV2:
+class LoadFactStudentEngagementDepth:
     """
     Enhanced Engagement Depth Classification based on REAL Behavior Patterns
     
@@ -140,16 +140,3 @@ class LoadFactStudentEngagementDepthV2:
         """
         
         db.execute_query(insert_query)
-        print("✅ Successfully loaded FactStudentEngagementDepth V2.")
-        print("📊 Classification Logic:")
-        print("   - Skimming: < 50% median OR < 3 interactions")
-        print("   - Stuck: > 120% p75 AND not completed AND low variety")
-        print("   - Deep Dive: 75%-120% median AND (completed OR high variety)")
-        print("   - Deep Dive (Alt): > 120% p75 BUT completed (thorough)")
-        print("   - Normal: Everything else")
-        print("")
-        print("🎯 Key Factors:")
-        print("   1. Interaction count (relative to class)")
-        print("   2. Completion status (finished or not)")
-        print("   3. Activity variety (different types of interactions)")
-        print("   4. Time span (quick vs extended)")

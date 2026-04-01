@@ -60,6 +60,63 @@ $PAGE->set_heading('Learning Analytics Dashboard');
 // AJAX Data Handler
 // AJAX Data Handler
 $action = optional_param('action', '', PARAM_ALPHA);
+
+if ($action === 'getcramdetail') {
+    header('Content-Type: application/json');
+    try {
+        $conn = local_microlearning_get_sqlserver_connection();
+        if (!$conn) throw new Exception('Connection failed');
+        $stmt = $conn->prepare("
+            SELECT b.student_key, a.actor_name, b.behavior_pattern,
+                   b.assignment_count, b.avg_hours_before_deadline,
+                   b.correlated_quiz_score, b.interpretation
+            FROM datamart.fact_behavior_outcome_correlation b
+            JOIN datamart.dim_actor a ON b.student_key = a.actor_id
+            WHERE CAST(b.course_key AS VARCHAR) = ?
+            ORDER BY CASE b.behavior_pattern
+                WHEN 'High Cramming' THEN 1
+                WHEN 'Moderate Cramming' THEN 2
+                ELSE 3 END, b.correlated_quiz_score ASC
+        ");
+        $stmt->execute([$courseid]);
+        echo json_encode(['rows' => $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []]);
+    } catch (Exception $e) { echo json_encode(['error' => $e->getMessage(), 'rows' => []]); }
+    exit;
+}
+
+if ($action === 'getpressuredetail') {
+    header('Content-Type: application/json');
+    try {
+        $conn = local_microlearning_get_sqlserver_connection();
+        if (!$conn) throw new Exception('Connection failed');
+        // Distribution summary
+        $stmt = $conn->prepare("
+            SELECT pressure_level, COUNT(*) as count
+            FROM datamart.fact_student_deadline_proximity
+            WHERE CAST(course_key AS VARCHAR) = ?
+            GROUP BY pressure_level ORDER BY count DESC
+        ");
+        $stmt->execute([$courseid]);
+        $dist = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        // Detail rows
+        $stmt = $conn->prepare("
+            SELECT p.student_key, a.actor_name, r.resource_name,
+                   p.pressure_level, p.hours_before_deadline, p.is_completed
+            FROM datamart.fact_student_deadline_proximity p
+            JOIN datamart.dim_actor a ON p.student_key = a.actor_id
+            JOIN datamart.dim_resource r ON CAST(p.resource_key AS VARCHAR) = CAST(r.resource_key AS VARCHAR)
+            WHERE CAST(p.course_key AS VARCHAR) = ?
+            ORDER BY CASE p.pressure_level
+                WHEN 'Critical' THEN 1 WHEN 'Overdue' THEN 2
+                WHEN 'Warning' THEN 3 WHEN 'Safe' THEN 4 ELSE 5 END,
+                p.hours_before_deadline ASC
+        ");
+        $stmt->execute([$courseid]);
+        echo json_encode(['distribution' => $dist, 'rows' => $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []]);
+    } catch (Exception $e) { echo json_encode(['error' => $e->getMessage(), 'rows' => [], 'distribution' => []]); }
+    exit;
+}
+
 if ($action === 'getdata') {
     header('Content-Type: application/json');
     try {
@@ -159,23 +216,27 @@ if ($action === 'getdata') {
 
             // 4. Behavioral Correlations
             $stmt = $conn->prepare("
-                SELECT avg_final_score, cram_student_count
+                SELECT 
+                    AVG(correlated_quiz_score) as avg_final_score,
+                    COUNT(CASE WHEN behavior_pattern = 'High Cramming' THEN 1 END) as cram_student_count
                 FROM datamart.fact_behavior_outcome_correlation
                 WHERE CAST(course_key AS VARCHAR) = ?
-                ORDER BY year DESC, week_of_year DESC LIMIT 1
             ");
             $stmt->execute([$courseid]);
             $data['correlation'] = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['avg_final_score' => 0, 'cram_student_count' => 0];
 
             // 4.b Cramming History (Trend)
             $stmt = $conn->prepare("
-                SELECT week_of_year, cram_student_count
+                SELECT 
+                    behavior_pattern,
+                    COUNT(*) as cram_student_count
                 FROM datamart.fact_behavior_outcome_correlation
                 WHERE CAST(course_key AS VARCHAR) = ?
-                ORDER BY year DESC, week_of_year DESC LIMIT 12
+                GROUP BY behavior_pattern
+                ORDER BY cram_student_count DESC
             ");
             $stmt->execute([$courseid]);
-            $data['cramming_history'] = array_reverse($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []);
+            $data['cramming_history'] = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             // 5. Engagement Depth
             $stmt = $conn->prepare("
@@ -474,6 +535,9 @@ endif; ?>
     const STUDENT_DRILLDOWN_PATH = '<?php echo (new moodle_url('/local/microlearning/student_detail.php'))->out(false); ?>';
     let charts = {};
 
+    const TIP_ICON = `<span title="__TIP__" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span>`;
+    function tip(text) { return TIP_ICON.replace('__TIP__', text); }
+
     function openStudentDrilldown(studentKey) {
         const courseId = document.getElementById('course-selector').value;
         const url = STUDENT_DRILLDOWN_PATH + 
@@ -541,7 +605,7 @@ endif; ?>
                     sub: 'Người dùng định danh',
                     icon: `<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>`,
                     color: 'bg-indigo-50',
-                    tip: 'Tổng số học viên duy nhất tham gia. Giúp xác định quy mô lớp học để điều chỉnh giáo trình và khối lượng hỗ trợ phù hợp.'
+                    tip: 'Tổng số học sinh trong khóa học'
                 },
                 {
                     label: 'Điểm tương tác TB',
@@ -549,7 +613,7 @@ endif; ?>
                     sub: 'Điểm trung bình tuần',
                     icon: `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
                     color: 'bg-emerald-50',
-                    tip: 'Cách tính (max 100đ): Tương tác tài liệu (tối đa 50đ) + Hoàn thành bài tập/Quiz (50đ). Chỉ số này phản ánh độ nhiệt huyết của lớp; mức lý tưởng là >50đ.'
+                    tip: 'Mức độ tham gia học tập trung bình (0-100 điểm)'
                 },
                 {
                     label: 'Điểm rủi ro TB',
@@ -557,7 +621,7 @@ endif; ?>
                     sub: 'Chỉ số dự báo',
                     icon: `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`,
                     color: 'bg-rose-50',
-                    tip: 'Xác suất bỏ học dự báo (0-100%). Được tính toán dựa trên sự sụt giảm tần suất đăng nhập và tiến độ làm bài. >50% cần can thiệp ngay.'
+                    tip: 'Xác suất bỏ học trung bình của lớp'
                 },
                 {
                     label: 'Học dồn cuối kỳ',
@@ -565,7 +629,7 @@ endif; ?>
                     sub: 'SV có hành vi học dồn',
                     icon: `<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
                     color: 'bg-amber-50',
-                    tip: 'Số SV có hành vi học dồn (Cramming): Học rất ít ở đầu kỳ nhưng tăng đột biến >300% thời gian ở cuối kỳ. Đây là nhóm học để đối phó, kiến thức khó bền vững.'
+                    tip: 'Số học sinh có xu hướng học dồn sát deadline'
                 }
             ];
         } else if (data.my_lifecycle) {
@@ -576,7 +640,7 @@ endif; ?>
                     sub: (data.my_lifecycle.completed_module_count || 0) + ' học phần',
                     icon: `<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
                     color: 'bg-indigo-50',
-                    tip: 'Phần trăm bài học đã hoàn thành. Hệ thống tính dựa trên số lượng module/hoạt động. Bạn nên duy trì mức >10%/tuần để về đích đúng hạn.'
+                    tip: 'Phần trăm (%) bài học đã hoàn thành'
                 },
                 {
                     label: 'Trạng thái hiện tại',
@@ -584,7 +648,7 @@ endif; ?>
                     sub: 'Vòng đời học tập',
                     icon: `<svg class="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>`,
                     color: 'bg-sky-50',
-                    tip: 'Xếp loại dựa trên sự chuyên cần. Tích cực (học đều), Chậm trễ (vắng học > 3 ngày), Rủi ro (vắng học > 7 ngày).'
+                    tip: 'Tình trạng học tập hiện tại của bạn'
                 },
                 {
                     label: 'Hoạt động cuối',
@@ -592,7 +656,7 @@ endif; ?>
                     sub: data.my_lifecycle.last_activity_date || 'N/A',
                     icon: `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
                     color: 'bg-emerald-50',
-                    tip: 'Thời điểm gần nhất bạn vào học. Duy trì khoảng cách vắng học dưới 48h để giữ thói quen học tập tốt nhất.'
+                    tip: 'Lần cuối bạn vào học'
                 },
                 {
                     label: 'Tương tác',
@@ -600,7 +664,7 @@ endif; ?>
                     sub: 'Điểm: ' + Math.round(data.my_daily && data.my_daily.length > 0 ? data.my_daily[data.my_daily.length - 1].score : 0) + ' • ' + (data.my_daily && data.my_daily.length > 0 ? Math.round(data.my_daily[data.my_daily.length - 1].total_minutes) : 0) + ' phút',
                     icon: `<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
                     color: 'bg-amber-50',
-                    tip: 'Điểm nỗ lực cá nhân trong ngày gần nhất kèm theo tổng số phút học thực tế. Mục tiêu đạt trên 50đ mỗi ngày học giúp bạn ghi nhớ kiến thức lâu hơn.'
+                    tip: 'Điểm tham gia học tập ngày gần nhất'
                 }
             ];
         }
@@ -610,7 +674,7 @@ endif; ?>
                 <div class="card relative group overflow-hidden">
                     <div class="flex items-start justify-between">
                         <div>
-                            <div class="stat-label">${m.label}</div>
+                            <div class="stat-label">${m.label}${m.tip ? `<span title="${m.tip}" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span>` : ''}</div>
                             <div class="stat-val">${m.val}</div>
                             <div class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-tight">${m.sub}</div>
                         </div>
@@ -618,11 +682,6 @@ endif; ?>
                             ${m.icon}
                         </div>
                     </div>
-                    ${m.tip ? `
-                        <div class="absolute bottom-4 right-4 cursor-help opacity-40 group-hover:opacity-100 transition-opacity" title="${m.tip}">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                    ` : ''}
                 </div>
             `;
         });
@@ -652,7 +711,7 @@ endif; ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="card md:col-span-2">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">Sức khỏe Module (Treemap)</h3>
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">Sức khỏe Module (Treemap)<span title="Mỗi ô là 1 module. Kích thước = số lượt tương tác. Màu đỏ/vàng/xanh = mức độ khó khăn của học sinh" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                             <button onclick="viewTreemapDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
                         </div>
                         <div id="module-health-treemap" class="min-h-[400px]"></div>
@@ -665,7 +724,7 @@ endif; ?>
 
                     <div class="card md:col-span-2">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">Luồng học tập (Sankey Flow)</h3>
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">Luồng học tập (Sankey Flow)<span title="Luồng chuyển đổi giữa các module học tập" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                             <button onclick="viewMatrixDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
                         </div>
                         <div id="learning-flow" class="w-full min-h-[400px]"></div>
@@ -673,13 +732,13 @@ endif; ?>
                     </div>
 
                     <div class="card md:col-span-2">
-                        <h3 class="text-lg font-bold mb-6 text-slate-800">Các bước chuyển tiếp phổ biến</h3>
+                        <h3 class="text-lg font-bold mb-6 text-slate-800">Các bước chuyển tiếp phổ biến<span title="Top các cặp module được chuyển tiếp nhiều nhất" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                         <div id="top-transitions-chart"></div>
                     </div>
 
                     <div class="card md:col-span-2">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-bold mb-6 text-slate-800">Tiến trình tiếp cận học phần (Coverage Funnel)</h3>
+                            <h3 class="text-lg font-bold mb-6 text-slate-800">Tiến trình tiếp cận học phần (Coverage Funnel)<span title="Số học sinh đã tương tác với từng module" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                             <button onclick="viewCoverageDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
                         </div>
                         <div id="dropoff-funnel" class="min-h-[400px]"></div>
@@ -688,21 +747,30 @@ endif; ?>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="card">
-                        <h3 class="text-lg font-bold mb-6 text-slate-800">Độ sâu tương tác</h3>
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-slate-800">Độ sâu tương tác<span title="Mức độ tương tác của học sinh với tài liệu" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
+                            <button onclick="viewDepthDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+                        </div>
                         <div id="depth-chart"></div>
                     </div>
                     <div class="card">
-                        <h3 class="text-lg font-bold mb-6 text-slate-800">Xu hướng tương tác lớp</h3>
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-bold text-slate-800">Xu hướng tương tác lớp<span title="Mức độ tham gia trung bình của lớp theo tuần" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
+                            <button onclick="viewTrendDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+                        </div>
                         <div id="trend-chart" class="h-[300px]"></div>
                     </div>
                 </div>
                 <div class="card">
-                    <h3 class="text-lg font-bold mb-6 text-slate-800">Xu hướng Học dồn</h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-bold text-slate-800">Xu hướng Học dồn<span title="Thói quen nộp bài của học sinh so với deadline" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
+                        <button onclick="viewCramDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+                    </div>
                     <div id="cram-chart" class="h-[300px]"></div>
                 </div>
                 <div class="card overflow-hidden">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-bold text-slate-800">Chi tiết hiệu suất sinh viên</h3>
+                        <h3 class="text-lg font-bold text-slate-800">Chi tiết hiệu suất sinh viên<span title="Danh sách học sinh sắp xếp theo mức độ rủi ro" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                         <button onclick="viewStudentDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Toàn bộ danh sách</button>
                     </div>
                     <div class="overflow-x-auto">
@@ -740,19 +808,25 @@ endif; ?>
             </div>
             <div class="lg:col-span-4 space-y-8">
                 <div class="card">
-                    <h3 class="text-lg font-bold mb-6 text-slate-800">Phân loại tương tác</h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-bold text-slate-800">Phân loại tương tác<span title="Phân bổ học sinh theo mức độ tham gia" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
+                        <button onclick="viewMixDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+                    </div>
                     <div id="mix-chart"></div>
                 </div>
                 <div class="card">
-                    <h3 class="text-lg font-bold mb-6 text-slate-800">Phân bổ Áp lực Deadline</h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-bold text-slate-800">Phân bổ Áp lực Deadline<span title="Trạng thái deadline của học sinh" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
+                        <button onclick="viewPressureDetail()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+                    </div>
                     <div id="pressure-chart"></div>
                 </div>
                 <div class="card border-indigo-100 border-l-4 border-l-indigo-600">
-                    <h3 class="text-lg font-bold mb-4 text-indigo-900">Mối tương quan hành vi</h3>
+                    <h3 class="text-lg font-bold mb-4 text-indigo-900">Mối tương quan hành vi<span title="Điểm quiz trung bình của lớp" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                     <div class="space-y-4 text-sm">
                         <div class="flex justify-between items-center">
                             <div class="text-[10px] font-black uppercase text-slate-400">Điểm số TB</div>
-                            <div class="text-2xl font-black text-indigo-600">${data.correlation?.avg_final_score || 0}%</div>
+                            <div class="text-2xl font-black text-indigo-600">${Math.round(data.correlation?.avg_final_score || 0)}%</div>
                         </div>
                     </div>
                 </div>
@@ -792,10 +866,11 @@ endif; ?>
 
             safeInitChart("#cram-chart", {
                 series: [{ name: 'SV Học dồn', data: (data.cramming_history || []).map(t => t.cram_student_count) }],
-                chart: { type: 'area', height: 300, toolbar: { show: false } },
-                stroke: { curve: 'smooth', width: 3 },
-                xaxis: { categories: (data.cramming_history || []).map(t => 'T' + t.week_of_year) },
-                colors: ['#f43f5e']
+                chart: { type: 'bar', height: 300, toolbar: { show: false } },
+                plotOptions: { bar: { borderRadius: 8, distributed: true } },
+                xaxis: { categories: (data.cramming_history || []).map(t => t.behavior_pattern) },
+                colors: ['#ef4444', '#f59e0b', '#10b981'],
+                legend: { show: false }
             });
 
             safeInitChart("#pressure-chart", {
@@ -815,7 +890,7 @@ endif; ?>
                 ] : [0, 0, 0, 0],
                 chart: { type: 'donut', height: 280 },
                 labels: ['Tích cực', 'Trung bình', 'Thấp', 'Thụ động'],
-                colors: ['#6366f1', '#8b5cf6', '#f43f5e', '#e2e8f0'],
+                colors: ['#10b981', '#f59e0b', '#ef4444', '#94a3b8'],
                 legend: { position: 'bottom' }
             });
         }, 50);
@@ -841,18 +916,18 @@ endif; ?>
         content.innerHTML = `
             <div class="lg:col-span-8 space-y-8">
                 <div class="card">
-                    <h3 class="text-lg font-bold mb-6 text-slate-800 flex items-center gap-2">Lịch sử tương tác của tôi</h3>
+                    <h3 class="text-lg font-bold mb-6 text-slate-800 flex items-center gap-2">Lịch sử tương tác của tôi<span title="Mức độ tham gia học tập hàng ngày (0-100 điểm)" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                     <div id="engagement-chart" class="h-[350px]"></div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="card">
-                        <h3 class="text-lg font-bold mb-6 text-slate-800">Nhịp sinh học học tập</h3>
+                        <h3 class="text-lg font-bold mb-6 text-slate-800">Nhịp sinh học học tập<span title="Khung giờ nào bạn học hiệu quả nhất trong ngày" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                         <div id="affinity-chart" class="min-h-[250px]"></div>
                         <p class="text-[10px] text-slate-400 mt-4 font-medium italic text-center">💡 Gợi ý: Khung giờ có đỉnh cao nhất là lúc bạn tập trung tốt nhất.</p>
                     </div>
                     <div class="card">
-                        <h3 class="text-lg font-bold mb-6 text-slate-800">Áp lực Deadline</h3>
+                        <h3 class="text-lg font-bold mb-6 text-slate-800">Áp lực Deadline<span title="Các bài tập sắp đến hạn nộp" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                         <div class="space-y-4">
                             ${(data.my_deadlines && data.my_deadlines.length > 0) ? data.my_deadlines.map(d => `
                                 <div class="p-3 rounded-xl border-l-4 ${d.pressure_level === 'Critical' ? 'bg-red-50 border-red-500' : (d.pressure_level === 'Warning' ? 'bg-amber-50 border-amber-500' : 'bg-green-50 border-green-500')}">
@@ -867,19 +942,19 @@ endif; ?>
                 </div>
 
                 <div class="card">
-                    <h3 class="text-lg font-bold mb-6 text-slate-800">Độ sâu học tập</h3>
+                    <h3 class="text-lg font-bold mb-6 text-slate-800">Độ sâu học tập<span title="Mức độ tương tác của bạn với từng tài liệu học tập" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                     <div id="depth-chart" class="min-h-[300px]"></div>
                 </div>
             </div>
             <div class="lg:col-span-4 flex flex-col gap-6 h-full">
                 <div class="card border-indigo-50 shadow-sm p-4 min-h-[300px]">
-                    <h3 class="text-sm font-semibold mb-4 text-slate-800 flex items-center gap-2">Lịch sử hoạt động (90 ngày)</h3>
+                    <h3 class="text-sm font-semibold mb-4 text-slate-800 flex items-center gap-2">Lịch sử hoạt động (90 ngày)<span title="Lịch sử học tập 90 ngày gần nhất. Ô tối = ngày học nhiều" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                     <div id="activity-heatmap" class="w-full h-[220px] flex items-center justify-center overflow-x-auto scrollbar-hide"></div>
                 </div>
 
                 <div class="card p-4">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-sm font-semibold text-slate-800">Nhật ký hoạt động</h3>
+                        <h3 class="text-sm font-semibold text-slate-800">Nhật ký hoạt động<span title="8 ngày gần nhất với điểm tham gia và thời gian học" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                         <button onclick="viewActivityDetail()" class="text-[9px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest">Chi tiết</button>
                     </div>
                     <div class="space-y-2">
@@ -898,7 +973,7 @@ endif; ?>
                 </div>
 
                 <div class="card border-indigo-100 border-l-4 border-l-indigo-600 p-4 flex-grow">
-                    <h3 class="text-sm font-semibold mb-3 text-indigo-900">Insight hành vi</h3>
+                    <h3 class="text-sm font-semibold mb-3 text-indigo-900">Insight hành vi<span title="Phân tích tự động dựa trên dữ liệu học tập của bạn. Cập nhật mỗi lần ETL chạy." style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h3>
                     <div class="text-xs space-y-3 text-slate-600 leading-relaxed font-medium">
                         ${(() => {
                             const best = data.my_affinity && data.my_affinity.length > 0 ? [...data.my_affinity].sort((a, b) => parseFloat(b.efficiency_index) - parseFloat(a.efficiency_index))[0] : null;
@@ -1151,18 +1226,27 @@ endif; ?>
         const sectionAgg = {};
         data.forEach(d => {
             if (!sectionAgg[d.section_name]) {
-                sectionAgg[d.section_name] = { interactions: 0, stuck_sum: 0, count: 0 };
+                sectionAgg[d.section_name] = { interactions: 0, stuck_sum: 0, skim_sum: 0, count: 0 };
             }
             sectionAgg[d.section_name].interactions += parseInt(d.total_interactions);
             sectionAgg[d.section_name].stuck_sum += parseFloat(d.stuck_rate);
+            sectionAgg[d.section_name].skim_sum  += parseFloat(d.skimming_rate);
             sectionAgg[d.section_name].count += 1;
+        });
+
+        // Also track skimming for overview color
+        data.forEach(d => {
+            if (!sectionAgg[d.section_name]) return;
+            if (!sectionAgg[d.section_name].skim_sum) sectionAgg[d.section_name].skim_sum = 0;
+            sectionAgg[d.section_name].skim_sum += parseFloat(d.skimming_rate);
         });
 
         const seriesData = Object.keys(sectionAgg).map(name => {
             const avgStuck = sectionAgg[name].stuck_sum / sectionAgg[name].count;
+            const avgSkim  = sectionAgg[name].skim_sum  / sectionAgg[name].count;
             let color = '#10b981';
-            if (avgStuck > 30) color = '#ef4444';
-            else if (avgStuck > 15) color = '#f59e0b';
+            if (avgStuck > 30)      color = '#ef4444';
+            else if (avgSkim > 50)  color = '#f59e0b';
 
             return { x: name, y: sectionAgg[name].interactions, fillColor: color };
         });
@@ -1196,7 +1280,7 @@ endif; ?>
                 if (!grouped[d.section_name]) grouped[d.section_name] = [];
                 let color = '#10b981';
                 if (parseFloat(d.stuck_rate) > 30) color = '#ef4444';
-                else if (parseFloat(d.skimming_rate) > 15) color = '#f59e0b';
+                else if (parseFloat(d.skimming_rate) > 50) color = '#f59e0b';
 
                 grouped[d.section_name].push({
                     x: d.resource_name,
@@ -1637,6 +1721,211 @@ endif; ?>
     document.addEventListener('DOMContentLoaded', fetchData);
     document.getElementById('course-selector').addEventListener('change', fetchData);
     if (isTeacher) document.getElementById('week-selector').addEventListener('change', fetchData);
+
+    // ── Detail modal functions ──────────────────────────────────────────────
+
+    async function viewTrendDetail() {
+        showModal('Xu hướng tương tác lớp — Chi tiết', `<div id="modal-trend-chart" class="min-h-[500px]"></div>`);
+        try {
+            const courseId = document.getElementById('course-selector').value;
+            const resp = await fetch(`dashboard.php?action=getdata&courseid=${courseId}&week=all`);
+            const data = await resp.json();
+            const trends = data.class_trends || [];
+            new ApexCharts(document.querySelector('#modal-trend-chart'), {
+                series: [
+                    { name: 'Điểm TB', data: trends.map(t => parseFloat(t.avg_engagement_score) || 0) },
+                    { name: 'Tích cực', data: trends.map(t => parseInt(t.active_student_count) || 0) },
+                    { name: 'Trung bình', data: trends.map(t => parseInt(t.medium_engagement_count) || 0) },
+                    { name: 'Thụ động', data: trends.map(t => parseInt(t.passive_student_count) || 0) },
+                ],
+                chart: { type: 'line', height: 500, toolbar: { show: true } },
+                stroke: { curve: 'smooth', width: [3, 2, 2, 2] },
+                xaxis: { categories: trends.map(t => `T${t.week_of_year}/${t.year}`) },
+                colors: ['#6366f1', '#10b981', '#f59e0b', '#94a3b8'],
+                legend: { position: 'top' },
+                yaxis: [
+                    { title: { text: 'Điểm TB' }, min: 0, max: 100 },
+                    { opposite: true, title: { text: 'Số học sinh' } }
+                ]
+            }).render();
+        } catch (err) { console.error(err); }
+    }
+
+    async function viewDepthDetail() {
+        showModal('Độ sâu tương tác — Chi tiết theo module', `
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left" id="modal-depth-table">
+                    <thead class="text-[10px] uppercase text-slate-400 border-b border-slate-100 font-black">
+                        <tr>
+                            <th class="py-3 px-4">Module</th>
+                            <th class="py-3 px-4 text-center">Tổng tương tác</th>
+                            <th class="py-3 px-4 text-center">Stuck %</th>
+                            <th class="py-3 px-4 text-center">Skimming %</th>
+                            <th class="py-3 px-4 text-center">Deep Dive %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-depth-body" class="divide-y divide-slate-100">
+                        <tr><td colspan="5" class="py-8 text-center text-slate-400 italic">Đang tải...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `);
+        try {
+            const courseId = document.getElementById('course-selector').value;
+            const resp = await fetch(`dashboard.php?action=getdata&courseid=${courseId}&viewall=1`);
+            const data = await resp.json();
+            const tbody = document.getElementById('modal-depth-body');
+            if (!tbody) return;
+            const rows = data.treemap_data || [];
+            if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400 italic">Không có dữ liệu</td></tr>'; return; }
+            tbody.innerHTML = rows.map(r => {
+                const stuck = parseFloat(r.stuck_rate) || 0;
+                const skim = parseFloat(r.skimming_rate) || 0;
+                const deep = Math.max(0, 100 - stuck - skim);
+                const stuckColor = stuck > 30 ? 'text-red-600 font-black' : 'text-slate-600';
+                const skimColor = skim > 50 ? 'text-amber-600 font-black' : 'text-slate-600';
+                return `<tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4 font-medium text-slate-800">${r.resource_name}</td>
+                    <td class="py-3 px-4 text-center font-mono">${r.total_interactions}</td>
+                    <td class="py-3 px-4 text-center ${stuckColor}">${Math.round(stuck)}%</td>
+                    <td class="py-3 px-4 text-center ${skimColor}">${Math.round(skim)}%</td>
+                    <td class="py-3 px-4 text-center text-emerald-600">${Math.round(deep)}%</td>
+                </tr>`;
+            }).join('');
+        } catch (err) { console.error(err); }
+    }
+
+    async function viewCramDetail() {
+        showModal('Phân tích Hành vi Học dồn — Chi tiết', `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="modal-cram-stats"></div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-[10px] uppercase text-slate-400 border-b border-slate-100 font-black">
+                        <tr>
+                            <th class="py-3 px-4">Sinh viên</th>
+                            <th class="py-3 px-4">Hành vi</th>
+                            <th class="py-3 px-4 text-center">Số bài</th>
+                            <th class="py-3 px-4 text-center">Giờ trước deadline TB</th>
+                            <th class="py-3 px-4 text-center">Điểm quiz TB</th>
+                            <th class="py-3 px-4">Nhận xét</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-cram-body" class="divide-y divide-slate-100">
+                        <tr><td colspan="6" class="py-8 text-center text-slate-400 italic">Đang tải...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `);
+        try {
+            const courseId = document.getElementById('course-selector').value;
+            const resp = await fetch(`dashboard.php?action=getdata&courseid=${courseId}&viewall=1`);
+            const data = await resp.json();
+            // Stats
+            const history = data.cramming_history || [];
+            const statsEl = document.getElementById('modal-cram-stats');
+            if (statsEl) {
+                const colors = { 'High Cramming': 'red', 'Moderate Cramming': 'amber', 'Planned': 'emerald' };
+                statsEl.innerHTML = history.map(h => {
+                    const c = colors[h.behavior_pattern] || 'slate';
+                    return `<div class="p-4 rounded-xl bg-${c}-50 border border-${c}-100">
+                        <div class="text-[10px] font-black uppercase text-${c}-400 mb-1">${h.behavior_pattern}</div>
+                        <div class="text-2xl font-black text-${c}-700">${h.cram_student_count} SV</div>
+                    </div>`;
+                }).join('');
+            }
+            // Table — fetch full correlation data via PHP
+            const resp2 = await fetch(`dashboard.php?action=getcramdetail&courseid=${courseId}`);
+            const cram = await resp2.json();
+            const tbody = document.getElementById('modal-cram-body');
+            if (!tbody) return;
+            const rows = cram.rows || [];
+            if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400 italic">Không có dữ liệu</td></tr>'; return; }
+            const patternColor = { 'High Cramming': 'text-red-600', 'Moderate Cramming': 'text-amber-600', 'Planned': 'text-emerald-600' };
+            tbody.innerHTML = rows.map(r => `<tr class="hover:bg-slate-50 cursor-pointer" onclick="openStudentDrilldown('${r.student_key}')">
+                <td class="py-3 px-4 font-medium text-slate-800">${r.actor_name || r.student_key}</td>
+                <td class="py-3 px-4 font-bold ${patternColor[r.behavior_pattern] || ''}">${r.behavior_pattern}</td>
+                <td class="py-3 px-4 text-center">${r.assignment_count}</td>
+                <td class="py-3 px-4 text-center font-mono">${parseFloat(r.avg_hours_before_deadline).toFixed(1)}h</td>
+                <td class="py-3 px-4 text-center font-mono">${Math.round(r.correlated_quiz_score)}%</td>
+                <td class="py-3 px-4 text-xs text-slate-500">${r.interpretation}</td>
+            </tr>`).join('');
+        } catch (err) { console.error(err); }
+    }
+
+    async function viewPressureDetail() {
+        showModal('Phân bổ Áp lực Deadline — Chi tiết', `
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6" id="modal-pressure-stats"></div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-[10px] uppercase text-slate-400 border-b border-slate-100 font-black">
+                        <tr>
+                            <th class="py-3 px-4">Sinh viên</th>
+                            <th class="py-3 px-4">Tài nguyên</th>
+                            <th class="py-3 px-4 text-center">Mức áp lực</th>
+                            <th class="py-3 px-4 text-center">Giờ còn lại</th>
+                            <th class="py-3 px-4 text-center">Đã hoàn thành</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-pressure-body" class="divide-y divide-slate-100">
+                        <tr><td colspan="5" class="py-8 text-center text-slate-400 italic">Đang tải...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `);
+        try {
+            const courseId = document.getElementById('course-selector').value;
+            const resp = await fetch(`dashboard.php?action=getpressuredetail&courseid=${courseId}`);
+            const data = await resp.json();
+            // Stats
+            const dist = data.distribution || [];
+            const statsEl = document.getElementById('modal-pressure-stats');
+            const pColors = { 'Critical': 'red', 'Warning': 'amber', 'Safe': 'emerald', 'Completed': 'indigo', 'Overdue': 'rose' };
+            if (statsEl) statsEl.innerHTML = dist.map(d => {
+                const c = pColors[d.pressure_level] || 'slate';
+                return `<div class="p-3 rounded-xl bg-${c}-50 border border-${c}-100 text-center">
+                    <div class="text-[10px] font-black uppercase text-${c}-400">${d.pressure_level}</div>
+                    <div class="text-xl font-black text-${c}-700">${d.count}</div>
+                </div>`;
+            }).join('');
+            // Table
+            const tbody = document.getElementById('modal-pressure-body');
+            if (!tbody) return;
+            const rows = data.rows || [];
+            if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400 italic">Không có dữ liệu</td></tr>'; return; }
+            const levelColor = { 'Critical': 'text-red-600 font-black', 'Warning': 'text-amber-600 font-bold', 'Overdue': 'text-rose-600 font-black' };
+            tbody.innerHTML = rows.map(r => `<tr class="hover:bg-slate-50 cursor-pointer" onclick="openStudentDrilldown('${r.student_key}')">
+                <td class="py-3 px-4 font-medium text-slate-800">${r.actor_name || r.student_key}</td>
+                <td class="py-3 px-4 text-slate-600">${r.resource_name}</td>
+                <td class="py-3 px-4 text-center ${levelColor[r.pressure_level] || 'text-slate-600'}">${r.pressure_level}</td>
+                <td class="py-3 px-4 text-center font-mono">${r.hours_before_deadline != null ? parseFloat(r.hours_before_deadline).toFixed(1) + 'h' : '—'}</td>
+                <td class="py-3 px-4 text-center">${r.is_completed ? '✅' : '—'}</td>
+            </tr>`).join('');
+        } catch (err) { console.error(err); }
+    }
+
+    async function viewMixDetail() {
+        showModal('Phân loại tương tác — Chi tiết theo tuần', `<div id="modal-mix-chart" class="min-h-[500px]"></div>`);
+        try {
+            const courseId = document.getElementById('course-selector').value;
+            const resp = await fetch(`dashboard.php?action=getdata&courseid=${courseId}&week=all`);
+            const data = await resp.json();
+            const trends = data.class_trends || [];
+            new ApexCharts(document.querySelector('#modal-mix-chart'), {
+                series: [
+                    { name: 'Tích cực (≥70)', data: trends.map(t => parseInt(t.active_student_count) || 0) },
+                    { name: 'Trung bình (40-69)', data: trends.map(t => parseInt(t.medium_engagement_count) || 0) },
+                    { name: 'Thấp (1-39)', data: trends.map(t => parseInt(t.low_engagement_count) || 0) },
+                    { name: 'Thụ động (0)', data: trends.map(t => parseInt(t.passive_student_count) || 0) },
+                ],
+                chart: { type: 'bar', height: 500, stacked: true, toolbar: { show: true } },
+                plotOptions: { bar: { borderRadius: 4 } },
+                xaxis: { categories: trends.map(t => `T${t.week_of_year}/${t.year}`) },
+                colors: ['#10b981', '#f59e0b', '#ef4444', '#94a3b8'],
+                legend: { position: 'top' },
+                fill: { opacity: 1 }
+            }).render();
+        } catch (err) { console.error(err); }
+    }
 </script>
 
 <?php echo $OUTPUT->footer(); ?>

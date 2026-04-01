@@ -1,0 +1,1546 @@
+{
+    "nodes": [
+        {
+            "id": "page_32",
+            "title": "About Your Instructor",
+            "type": "page",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "page_33",
+            "title": "Office Hours Information",
+            "type": "page",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "page_35",
+            "title": "Technical Support",
+            "type": "page",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "page_36",
+            "title": "Accessibility Policies and Services",
+            "type": "page",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "page_37",
+            "title": "Academic Support Services",
+            "type": "page",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "page_38",
+            "title": "Student Services and Resources",
+            "type": "page",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "page_39",
+            "title": "Data and Privacy",
+            "type": "page",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "forum_46",
+            "title": "News and Announcements Forum",
+            "type": "forum",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "resource_47",
+            "title": "Course Syllabus and Schedule",
+            "type": "resource",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "url_48",
+            "title": "Course Syllabus and Schedule",
+            "type": "url",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "url_49",
+            "title": "Textbook: Computer Applications (Pressbooks)",
+            "type": "url",
+            "bloom_level": "Remember"
+        },
+        {
+            "id": "forum_50",
+            "title": "Introduce Yourself!",
+            "type": "forum",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "forum_51",
+            "title": "Q & A Forum for Students",
+            "type": "forum",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_52",
+            "title": "Pressbooks Chapter: Operating Systems",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_53",
+            "title": "Module 1 Assignment",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_54",
+            "title": "Pressbooks Chapter: Operating Systems",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_55",
+            "title": "Module 2 Assignment",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_56",
+            "title": "Pressbooks Chapter: Operating Systems",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_57",
+            "title": "Module 3 Assignment",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_58",
+            "title": "Pressbooks Chapter: Word Processing",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_59",
+            "title": "Flyer",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_60",
+            "title": "Pressbooks Chapter: Word Processing",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_61",
+            "title": "Newsletter",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_62",
+            "title": "Pressbooks Chapter: Word Processing",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_63",
+            "title": "Letter",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_64",
+            "title": "Pressbooks Chapter: Word Processing",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_65",
+            "title": "Resume",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_66",
+            "title": "Pressbooks Chapter: Presentation Software",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_67",
+            "title": "Module Assignment",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_68",
+            "title": "Pressbooks Chapter: Presentation Software",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_69",
+            "title": "Module Assignment",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_70",
+            "title": "Pressbooks Chapter: Presentation Software",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_71",
+            "title": "Module Assignment",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_72",
+            "title": "Pressbooks Chapter: Spreadsheets",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_73",
+            "title": "Module Assignment",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_74",
+            "title": "Pressbooks Chapter: An Intro to Databases",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_75",
+            "title": "MS Access Project 1: Creating Database Objects",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_76",
+            "title": "MS Access Walkthrough and Tutorials by Microsoft Point (c)",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_77",
+            "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_78",
+            "title": "Video - MS Access Practice 1",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_79",
+            "title": "Pressbooks Chapter: Database Objects and Querying a Database",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_80",
+            "title": "MS Access Project 2: Querying a Database",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_81",
+            "title": "MS Access Walkthrough and Tutorials by Microsoft (c)",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_82",
+            "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_83",
+            "title": "Video - MS Access Practice 2",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_84",
+            "title": "Video - MS Access Practice 3",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_85",
+            "title": "Pressbooks Chapter: Creating Reports and Forms",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "assign_86",
+            "title": "MS Access Project 3: Reports and Forms",
+            "type": "assignment",
+            "bloom_level": "Apply"
+        },
+        {
+            "id": "url_87",
+            "title": "MS Access Walkthrough and Tutorials by Microsoft (c)",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_88",
+            "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "url_89",
+            "title": "Video - MS Access Practice 4 Walkthrough CC",
+            "type": "url",
+            "bloom_level": "Understand"
+        },
+        {
+            "id": "section_21",
+            "title": "Welcome!"
+        },
+        {
+            "id": "module_32",
+            "title": "About Your Instructor"
+        },
+        {
+            "id": "module_33",
+            "title": "Office Hours Information"
+        },
+        {
+            "id": "module_34",
+            "title": "Instructor Ideas Forum (FOR INSTRUCTORS--hidden from students)"
+        },
+        {
+            "id": "section_22",
+            "title": "Learner Support"
+        },
+        {
+            "id": "module_35",
+            "title": "Technical Support"
+        },
+        {
+            "id": "module_36",
+            "title": "Accessibility Policies and Services"
+        },
+        {
+            "id": "module_37",
+            "title": "Academic Support Services"
+        },
+        {
+            "id": "module_38",
+            "title": "Student Services and Resources"
+        },
+        {
+            "id": "module_39",
+            "title": "Data and Privacy"
+        },
+        {
+            "id": "section_23",
+            "title": "FOR INSTRUCTORS: Using This Template and Additional Resources"
+        },
+        {
+            "id": "module_40",
+            "title": "FOR INSTRUCTORS: Important Guidelines for Using This Template"
+        },
+        {
+            "id": "module_41",
+            "title": "Interest/Adoption Survey"
+        },
+        {
+            "id": "module_42",
+            "title": "Ancillary Materials"
+        },
+        {
+            "id": "module_43",
+            "title": "2022 Quality Matters Review and Amendments"
+        },
+        {
+            "id": "module_44",
+            "title": "2022 Teacher Review and Amendments"
+        },
+        {
+            "id": "module_45",
+            "title": "For Instructors: Testing"
+        },
+        {
+            "id": "section_24",
+            "title": "Getting Started"
+        },
+        {
+            "id": "module_46",
+            "title": "News and Announcements Forum"
+        },
+        {
+            "id": "module_47",
+            "title": "Course Syllabus and Schedule"
+        },
+        {
+            "id": "module_48",
+            "title": "Course Syllabus and Schedule"
+        },
+        {
+            "id": "module_49",
+            "title": "Textbook: Computer Applications (Pressbooks)"
+        },
+        {
+            "id": "module_50",
+            "title": "Introduce Yourself!"
+        },
+        {
+            "id": "module_51",
+            "title": "Q & A Forum for Students"
+        },
+        {
+            "id": "section_25",
+            "title": "Computers and Operating Systems 1 - Hardware"
+        },
+        {
+            "id": "module_52",
+            "title": "Pressbooks Chapter: Operating Systems"
+        },
+        {
+            "id": "module_53",
+            "title": "Module 1 Assignment"
+        },
+        {
+            "id": "section_26",
+            "title": "Computers and Operating Systems 2 - Software"
+        },
+        {
+            "id": "module_54",
+            "title": "Pressbooks Chapter: Operating Systems"
+        },
+        {
+            "id": "module_55",
+            "title": "Module 2 Assignment"
+        },
+        {
+            "id": "section_27",
+            "title": "Computers and Operating Systems 3 - Security & Email"
+        },
+        {
+            "id": "module_56",
+            "title": "Pressbooks Chapter: Operating Systems"
+        },
+        {
+            "id": "module_57",
+            "title": "Module 3 Assignment"
+        },
+        {
+            "id": "section_28",
+            "title": "Processing Software 1: Concepts"
+        },
+        {
+            "id": "module_58",
+            "title": "Pressbooks Chapter: Word Processing"
+        },
+        {
+            "id": "module_59",
+            "title": "Flyer"
+        },
+        {
+            "id": "section_29",
+            "title": "Processing Software 2: Formatting and Editing Techniques"
+        },
+        {
+            "id": "module_60",
+            "title": "Pressbooks Chapter: Word Processing"
+        },
+        {
+            "id": "module_61",
+            "title": "Newsletter"
+        },
+        {
+            "id": "section_30",
+            "title": "Processing Software 3: Inserting"
+        },
+        {
+            "id": "module_62",
+            "title": "Pressbooks Chapter: Word Processing"
+        },
+        {
+            "id": "module_63",
+            "title": "Letter"
+        },
+        {
+            "id": "section_31",
+            "title": "Processing Software 4: Other Features"
+        },
+        {
+            "id": "module_64",
+            "title": "Pressbooks Chapter: Word Processing"
+        },
+        {
+            "id": "module_65",
+            "title": "Resume"
+        },
+        {
+            "id": "section_32",
+            "title": "Presentations 1: Creating and Editing"
+        },
+        {
+            "id": "module_66",
+            "title": "Pressbooks Chapter: Presentation Software"
+        },
+        {
+            "id": "module_67",
+            "title": "Module Assignment"
+        },
+        {
+            "id": "section_33",
+            "title": "Presentations 2: Enhance"
+        },
+        {
+            "id": "module_68",
+            "title": "Pressbooks Chapter: Presentation Software"
+        },
+        {
+            "id": "module_69",
+            "title": "Module Assignment"
+        },
+        {
+            "id": "section_34",
+            "title": "Presentations 3: Add Media and Animation"
+        },
+        {
+            "id": "module_70",
+            "title": "Pressbooks Chapter: Presentation Software"
+        },
+        {
+            "id": "module_71",
+            "title": "Module Assignment"
+        },
+        {
+            "id": "section_35",
+            "title": "Spreadsheets"
+        },
+        {
+            "id": "module_72",
+            "title": "Pressbooks Chapter: Spreadsheets"
+        },
+        {
+            "id": "module_73",
+            "title": "Module Assignment"
+        },
+        {
+            "id": "section_36",
+            "title": "Database Software 1: Database Objects"
+        },
+        {
+            "id": "module_74",
+            "title": "Pressbooks Chapter: An Intro to Databases"
+        },
+        {
+            "id": "module_75",
+            "title": "MS Access Project 1: Creating Database Objects"
+        },
+        {
+            "id": "module_76",
+            "title": "MS Access Walkthrough and Tutorials by Microsoft Point (c)"
+        },
+        {
+            "id": "module_77",
+            "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)"
+        },
+        {
+            "id": "module_78",
+            "title": "Video - MS Access Practice 1"
+        },
+        {
+            "id": "section_37",
+            "title": "Database Software 2: Querying a Database"
+        },
+        {
+            "id": "module_79",
+            "title": "Pressbooks Chapter: Database Objects and Querying a Database"
+        },
+        {
+            "id": "module_80",
+            "title": "MS Access Project 2: Querying a Database"
+        },
+        {
+            "id": "module_81",
+            "title": "MS Access Walkthrough and Tutorials by Microsoft (c)"
+        },
+        {
+            "id": "module_82",
+            "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)"
+        },
+        {
+            "id": "module_83",
+            "title": "Video - MS Access Practice 2"
+        },
+        {
+            "id": "module_84",
+            "title": "Video - MS Access Practice 3"
+        },
+        {
+            "id": "section_38",
+            "title": "Database Software 3: Creating Reports and Forms "
+        },
+        {
+            "id": "module_85",
+            "title": "Pressbooks Chapter: Creating Reports and Forms"
+        },
+        {
+            "id": "module_86",
+            "title": "MS Access Project 3: Reports and Forms"
+        },
+        {
+            "id": "module_87",
+            "title": "MS Access Walkthrough and Tutorials by Microsoft (c)"
+        },
+        {
+            "id": "module_88",
+            "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)"
+        },
+        {
+            "id": "module_89",
+            "title": "Video - MS Access Practice 4 Walkthrough CC"
+        }
+    ],
+    "edges": [
+        {
+            "from": "resource_47",
+            "to": "url_49",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Syllabus introduces the main textbook resource, which is foundational for all content chapters."
+        },
+        {
+            "from": "resource_47",
+            "to": "url_52",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Syllabus is a prerequisite for starting the first content module."
+        },
+        {
+            "from": "resource_47",
+            "to": "url_48",
+            "type": "RECOMMENDED",
+            "confidence": 0.7,
+            "reason": "Provides an alternative link to the course syllabus."
+        },
+        {
+            "from": "resource_47",
+            "to": "page_32",
+            "type": "RECOMMENDED",
+            "confidence": 0.7,
+            "reason": "Syllabus recommends reviewing instructor information early in the course."
+        },
+        {
+            "from": "resource_47",
+            "to": "page_33",
+            "type": "RECOMMENDED",
+            "confidence": 0.7,
+            "reason": "Syllabus recommends reviewing office hours information early in the course."
+        },
+        {
+            "from": "resource_47",
+            "to": "forum_50",
+            "type": "RECOMMENDED",
+            "confidence": 0.7,
+            "reason": "Syllabus recommends early social interaction and community building."
+        },
+        {
+            "from": "resource_47",
+            "to": "page_35",
+            "type": "SUPPORTING",
+            "confidence": 0.7,
+            "reason": "Syllabus points to technical support resources available throughout the course."
+        },
+        {
+            "from": "resource_47",
+            "to": "page_36",
+            "type": "SUPPORTING",
+            "confidence": 0.7,
+            "reason": "Syllabus points to accessibility policies and services available throughout the course."
+        },
+        {
+            "from": "resource_47",
+            "to": "page_37",
+            "type": "SUPPORTING",
+            "confidence": 0.7,
+            "reason": "Syllabus points to academic support services available throughout the course."
+        },
+        {
+            "from": "resource_47",
+            "to": "page_38",
+            "type": "SUPPORTING",
+            "confidence": 0.7,
+            "reason": "Syllabus points to student services and resources available throughout the course."
+        },
+        {
+            "from": "resource_47",
+            "to": "page_39",
+            "type": "SUPPORTING",
+            "confidence": 0.7,
+            "reason": "Syllabus points to data and privacy information relevant throughout the course."
+        },
+        {
+            "from": "resource_47",
+            "to": "forum_46",
+            "type": "SUPPORTING",
+            "confidence": 0.7,
+            "reason": "Syllabus points to the news and announcements forum for ongoing updates."
+        },
+        {
+            "from": "resource_47",
+            "to": "forum_51",
+            "type": "SUPPORTING",
+            "confidence": 0.7,
+            "reason": "Syllabus points to the Q&A forum for ongoing student support."
+        },
+        {
+            "from": "url_52",
+            "to": "assign_53",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the module assignment."
+        },
+        {
+            "from": "assign_53",
+            "to": "url_54",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of Module 1 assignment is a prerequisite for progressing to Module 2 content."
+        },
+        {
+            "from": "url_54",
+            "to": "assign_55",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the module assignment."
+        },
+        {
+            "from": "assign_55",
+            "to": "url_56",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of Module 2 assignment is a prerequisite for progressing to Module 3 content."
+        },
+        {
+            "from": "url_56",
+            "to": "assign_57",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the module assignment."
+        },
+        {
+            "from": "assign_57",
+            "to": "url_58",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of Module 3 assignment is a prerequisite for starting Word Processing content."
+        },
+        {
+            "from": "url_58",
+            "to": "assign_59",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the Flyer assignment."
+        },
+        {
+            "from": "assign_59",
+            "to": "url_60",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of the Flyer assignment is a prerequisite for the next Word Processing content."
+        },
+        {
+            "from": "url_60",
+            "to": "assign_61",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the Newsletter assignment."
+        },
+        {
+            "from": "assign_61",
+            "to": "url_62",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of the Newsletter assignment is a prerequisite for the next Word Processing content."
+        },
+        {
+            "from": "url_62",
+            "to": "assign_63",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the Letter assignment."
+        },
+        {
+            "from": "assign_63",
+            "to": "url_64",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of the Letter assignment is a prerequisite for the next Word Processing content."
+        },
+        {
+            "from": "url_64",
+            "to": "assign_65",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the Resume assignment."
+        },
+        {
+            "from": "assign_65",
+            "to": "url_66",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of the Resume assignment is a prerequisite for Presentation Software content."
+        },
+        {
+            "from": "url_66",
+            "to": "assign_67",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the module assignment."
+        },
+        {
+            "from": "assign_67",
+            "to": "url_68",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of the module assignment is a prerequisite for the next Presentation Software content."
+        },
+        {
+            "from": "url_68",
+            "to": "assign_69",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the module assignment."
+        },
+        {
+            "from": "assign_69",
+            "to": "url_70",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of the module assignment is a prerequisite for the next Presentation Software content."
+        },
+        {
+            "from": "url_70",
+            "to": "assign_71",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the module assignment."
+        },
+        {
+            "from": "assign_71",
+            "to": "url_72",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of the module assignment is a prerequisite for Spreadsheets content."
+        },
+        {
+            "from": "url_72",
+            "to": "assign_73",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The content chapter provides the necessary knowledge for the module assignment."
+        },
+        {
+            "from": "assign_73",
+            "to": "url_74",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of the module assignment is a prerequisite for starting Database Software content."
+        },
+        {
+            "from": "url_74",
+            "to": "assign_75",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The database chapter provides foundational knowledge for the Access project."
+        },
+        {
+            "from": "url_76",
+            "to": "assign_75",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Walkthroughs and tutorials provide additional guidance for the Access project."
+        },
+        {
+            "from": "url_77",
+            "to": "assign_75",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Walkthroughs and tutorials provide additional guidance for the Access project."
+        },
+        {
+            "from": "url_78",
+            "to": "assign_75",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Practice video provides practical demonstration for the Access project."
+        },
+        {
+            "from": "assign_75",
+            "to": "url_79",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of Access Project 1 is a prerequisite for the next database chapter."
+        },
+        {
+            "from": "url_79",
+            "to": "assign_80",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The database chapter provides foundational knowledge for the Access project."
+        },
+        {
+            "from": "url_81",
+            "to": "assign_80",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Walkthroughs and tutorials provide additional guidance for the Access project."
+        },
+        {
+            "from": "url_82",
+            "to": "assign_80",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Walkthroughs and tutorials provide additional guidance for the Access project."
+        },
+        {
+            "from": "url_83",
+            "to": "assign_80",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Practice video provides practical demonstration for the Access project."
+        },
+        {
+            "from": "url_84",
+            "to": "assign_80",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Practice video provides practical demonstration for the Access project."
+        },
+        {
+            "from": "assign_80",
+            "to": "url_85",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "Completion of Access Project 2 is a prerequisite for the next database chapter."
+        },
+        {
+            "from": "url_85",
+            "to": "assign_86",
+            "type": "PREREQUISITE",
+            "confidence": 0.9,
+            "reason": "The database chapter provides foundational knowledge for the Access project."
+        },
+        {
+            "from": "url_87",
+            "to": "assign_86",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Walkthroughs and tutorials provide additional guidance for the Access project."
+        },
+        {
+            "from": "url_88",
+            "to": "assign_86",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Walkthroughs and tutorials provide additional guidance for the Access project."
+        },
+        {
+            "from": "url_89",
+            "to": "assign_86",
+            "type": "SUPPORTING",
+            "confidence": 0.8,
+            "reason": "Practice video provides practical demonstration for the Access project."
+        },
+        {
+            "from": "section_21",
+            "to": "module_32",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_32",
+            "to": "page_32",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_21",
+            "to": "module_33",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_33",
+            "to": "page_33",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_21",
+            "to": "module_34",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_34",
+            "to": "forum_34",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_22",
+            "to": "module_35",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_35",
+            "to": "page_35",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_22",
+            "to": "module_36",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_36",
+            "to": "page_36",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_22",
+            "to": "module_37",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_37",
+            "to": "page_37",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_22",
+            "to": "module_38",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_38",
+            "to": "page_38",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_22",
+            "to": "module_39",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_39",
+            "to": "page_39",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_23",
+            "to": "module_40",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_40",
+            "to": "page_40",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_23",
+            "to": "module_41",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_41",
+            "to": "url_41",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_23",
+            "to": "module_42",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_42",
+            "to": "folder_42",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_23",
+            "to": "module_43",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_43",
+            "to": "resource_43",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_23",
+            "to": "module_44",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_44",
+            "to": "resource_44",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_23",
+            "to": "module_45",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_45",
+            "to": "page_45",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_24",
+            "to": "module_46",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_46",
+            "to": "forum_46",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_24",
+            "to": "module_47",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_47",
+            "to": "resource_47",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_24",
+            "to": "module_48",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_48",
+            "to": "url_48",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_24",
+            "to": "module_49",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_49",
+            "to": "url_49",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_24",
+            "to": "module_50",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_50",
+            "to": "forum_50",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_24",
+            "to": "module_51",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_51",
+            "to": "forum_51",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_25",
+            "to": "module_52",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_52",
+            "to": "url_52",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_25",
+            "to": "module_53",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_53",
+            "to": "assign_53",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_26",
+            "to": "module_54",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_54",
+            "to": "url_54",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_26",
+            "to": "module_55",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_55",
+            "to": "assign_55",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_27",
+            "to": "module_56",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_56",
+            "to": "url_56",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_27",
+            "to": "module_57",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_57",
+            "to": "assign_57",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_28",
+            "to": "module_58",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_58",
+            "to": "url_58",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_28",
+            "to": "module_59",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_59",
+            "to": "assign_59",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_29",
+            "to": "module_60",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_60",
+            "to": "url_60",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_29",
+            "to": "module_61",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_61",
+            "to": "assign_61",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_30",
+            "to": "module_62",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_62",
+            "to": "url_62",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_30",
+            "to": "module_63",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_63",
+            "to": "assign_63",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_31",
+            "to": "module_64",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_64",
+            "to": "url_64",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_31",
+            "to": "module_65",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_65",
+            "to": "assign_65",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_32",
+            "to": "module_66",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_66",
+            "to": "url_66",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_32",
+            "to": "module_67",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_67",
+            "to": "assign_67",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_33",
+            "to": "module_68",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_68",
+            "to": "url_68",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_33",
+            "to": "module_69",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_69",
+            "to": "assign_69",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_34",
+            "to": "module_70",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_70",
+            "to": "url_70",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_34",
+            "to": "module_71",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_71",
+            "to": "assign_71",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_35",
+            "to": "module_72",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_72",
+            "to": "url_72",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_35",
+            "to": "module_73",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_73",
+            "to": "assign_73",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_36",
+            "to": "module_74",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_74",
+            "to": "url_74",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_36",
+            "to": "module_75",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_75",
+            "to": "assign_75",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_36",
+            "to": "module_76",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_76",
+            "to": "url_76",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_36",
+            "to": "module_77",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_77",
+            "to": "url_77",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_36",
+            "to": "module_78",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_78",
+            "to": "url_78",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_37",
+            "to": "module_79",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_79",
+            "to": "url_79",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_37",
+            "to": "module_80",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_80",
+            "to": "assign_80",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_37",
+            "to": "module_81",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_81",
+            "to": "url_81",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_37",
+            "to": "module_82",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_82",
+            "to": "url_82",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_37",
+            "to": "module_83",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_83",
+            "to": "url_83",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_37",
+            "to": "module_84",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_84",
+            "to": "url_84",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_38",
+            "to": "module_85",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_85",
+            "to": "url_85",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_38",
+            "to": "module_86",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_86",
+            "to": "assign_86",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_38",
+            "to": "module_87",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_87",
+            "to": "url_87",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_38",
+            "to": "module_88",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_88",
+            "to": "url_88",
+            "type": "HAS_RESOURCE"
+        },
+        {
+            "from": "section_38",
+            "to": "module_89",
+            "type": "HAS_MODULE"
+        },
+        {
+            "from": "module_89",
+            "to": "url_89",
+            "type": "HAS_RESOURCE"
+        }
+    ]
+}

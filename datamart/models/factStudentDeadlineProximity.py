@@ -13,7 +13,9 @@ class FactStudentDeadlineProximity:
             resource_key VARCHAR(255),
             deadline_date TIMESTAMP,
             first_attempt_date TIMESTAMP,
+            hours_before_deadline DECIMAL(10,2),
             pressure_level VARCHAR(50),
+            is_completed BOOLEAN,
             CONSTRAINT PK_fact_student_deadline_proximity PRIMARY KEY (student_key, course_key, resource_key)
             """
         self.db.create_table(self.table_name, schema)

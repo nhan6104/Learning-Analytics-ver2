@@ -22,4 +22,3 @@ class LoadDimSection:
             # Nếu name trống, dùng Section + số thứ tự
             name = s['name'] if s['name'] else f"Section {s['section']}"
             db.execute_query(insert_query, (str(s['id']), name, s['section'], str(s['course'])))
-        print("Successfully loaded DimSection.")

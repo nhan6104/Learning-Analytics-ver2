@@ -9,13 +9,14 @@ class FactBehaviorOutcomeCorrelation:
 
     def create_table(self):
         schema = """
+            student_key VARCHAR(255),
             course_key VARCHAR(255),
-            week_of_year INT,
-            year INT,
-            correlation_active_learning_score INT,
-            correlation_cram_failure INT,
-            avg_final_score DECIMAL(5,2),
-            cram_student_count INT            
+            behavior_pattern VARCHAR(100),
+            assignment_count INT,
+            avg_hours_before_deadline DECIMAL(10,2),
+            correlated_quiz_score DECIMAL(5,2),
+            correlation_coefficient DECIMAL(5,2),
+            interpretation TEXT
             """
         
         self.db.create_table(self.table_name, schema)

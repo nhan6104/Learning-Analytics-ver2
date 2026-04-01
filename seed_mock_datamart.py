@@ -69,6 +69,8 @@ def seed_data():
         "fact_risk_student_weekly":
             "student_key VARCHAR(255), course_key INT, week_of_year INT, year INT, "
             "engagement_score INT, progress_score INT, outcome_score INT, "
+            "engagement_trend DECIMAL(10,2), inactivity_days INT, "
+            "progress_lag_pct DECIMAL(10,2), social_isolation_score INT, "
             "risk_score INT, dropout_probability_pct DECIMAL(5,2), risk_level VARCHAR(255)",
 
         "fact_class_engagement_distribution":
@@ -93,6 +95,8 @@ def seed_data():
         "fact_student_time_affinity":
             "student_key VARCHAR(255), course_key VARCHAR(255), time_slot VARCHAR(50), "
             "efficiency_index DECIMAL(5,2), total_engagement_score INT, session_count INT, "
+            "student_avg_efficiency DECIMAL(5,2), relative_efficiency DECIMAL(10,2), "
+            "is_peak_time BOOLEAN, peak_rank INT, interpretation TEXT, recommendation TEXT, "
             "CONSTRAINT PK_fact_student_time_affinity PRIMARY KEY (student_key, course_key, time_slot)",
 
         "fact_student_deadline_proximity":
@@ -107,9 +111,10 @@ def seed_data():
             "CONSTRAINT PK_fact_student_engagement_depth PRIMARY KEY (student_key, course_key, resource_key)",
 
         "fact_behavior_outcome_correlation":
-            "course_key VARCHAR(255), week_of_year INT, year INT, "
-            "correlation_active_learning_score INT, correlation_cram_failure INT, "
-            "avg_final_score DECIMAL(5,2), cram_student_count INT",
+            "student_key VARCHAR(255), course_key VARCHAR(255), behavior_pattern VARCHAR(100), "
+            "assignment_count INT, avg_hours_before_deadline DECIMAL(10,2), "
+            "correlated_quiz_score DECIMAL(5,2), correlation_coefficient DECIMAL(5,2), "
+            "interpretation TEXT",
     }
 
     print("🏗️ Khởi tạo cấu trúc bảng...")
@@ -137,8 +142,8 @@ def seed_data():
 
     actors = [
         {"actor_id": "2", "actor_name": "Admin User"},
-        {"actor_id": "3", "actor_name": "Phát Hồ Tấn"},
-        {"actor_id": "5", "actor_name": "Nguyễn Văn An"},
+        {"actor_id": "3", "actor_name": "Nguyễn Văn An"},
+        {"actor_id": "5", "actor_name": "Phát Hồ Tấn"},
     ]
     student_profiles = {"2": "star", "3": "normal", "5": "procrastinator"}
 
@@ -344,6 +349,10 @@ def seed_data():
                     "engagement_score":      int(avg_eng),
                     "progress_score":        random.randint(80, 100) if p_type == "star" else random.randint(10, 70),
                     "outcome_score":         random.randint(75, 100) if p_type == "star" else random.randint(5, 80),
+                    "engagement_trend":      round(random.uniform(-10, 10), 2),
+                    "inactivity_days":       random.randint(0, 2) if p_type == "star" else random.randint(0, 7),
+                    "progress_lag_pct":      round(random.uniform(0, 5), 2) if p_type == "star" else round(random.uniform(0, 30), 2),
+                    "social_isolation_score": 0 if p_type == "star" else random.choice([0, 50, 100]),
                     "risk_score":            risk,
                     "dropout_probability_pct": float(risk),
                     "risk_level":            "High" if risk > 70 else ("Medium" if risk > 40 else "Low"),
@@ -386,21 +395,43 @@ def seed_data():
             })
 
             # --- 2.4 Time affinity ---
-            for slot in ["Morning", "Afternoon", "Evening", "Night"]:
+            slots = ["Morning", "Afternoon", "Evening", "Night"]
+            slot_scores = {}
+            for slot in slots:
                 pref = 1.0
                 if p_type == "early-bird" and slot == "Morning":   pref = 3.0
                 if p_type == "night-owl"  and slot == "Night":     pref = 3.5
                 if p_type == "star"       and slot in ["Morning", "Afternoon"]: pref = 2.0
                 score_sum  = int(random.randint(400, 3000) * pref)
                 sess_count = random.randint(10, 50)
+                eff = round(score_sum / max(sess_count, 1) / 10, 2)
+                slot_scores[slot] = eff
                 affinity.append({
-                    "student_key":           s_key,
-                    "course_key":            c["course_key"],
-                    "time_slot":             slot,
-                    "efficiency_index":      round(score_sum / max(sess_count, 1) / 10, 2),
+                    "student_key":            s_key,
+                    "course_key":             c["course_key"],
+                    "time_slot":              slot,
+                    "efficiency_index":       eff,
                     "total_engagement_score": score_sum,
-                    "session_count":         sess_count,
+                    "session_count":          sess_count,
+                    "student_avg_efficiency": 0.0,  # filled below
+                    "relative_efficiency":    0.0,  # filled below
+                    "is_peak_time":           False, # filled below
+                    "peak_rank":              0,     # filled below
+                    "interpretation":         "",
+                    "recommendation":         "",
                 })
+            # fill derived fields
+            avg_eff = round(sum(slot_scores.values()) / len(slot_scores), 2)
+            peak_slot = max(slot_scores, key=slot_scores.get)
+            sorted_slots = sorted(slot_scores, key=slot_scores.get, reverse=True)
+            for rec in affinity[-4:]:
+                rec["student_avg_efficiency"] = avg_eff
+                rel = round(rec["efficiency_index"] / avg_eff * 100, 2) if avg_eff > 0 else 100.0
+                rec["relative_efficiency"] = rel
+                rec["is_peak_time"] = rec["time_slot"] == peak_slot
+                rec["peak_rank"] = sorted_slots.index(rec["time_slot"]) + 1
+                rec["interpretation"] = "Peak Productivity" if rec["is_peak_time"] else ("Above Average" if rel >= 100 else "Below Average")
+                rec["recommendation"] = "Schedule important tasks during this time" if rec["is_peak_time"] else "Monitor study patterns"
 
             # --- 2.5 Engagement depth & deadline proximity ---
             # Xác suất reach giảm dần theo thứ tự module — mô phỏng drop-off tự nhiên
@@ -432,14 +463,19 @@ def seed_data():
                     # days_before_deadline: positif = nộp sớm, âm = nộp trễ
                     days_before = random.randint(1, 5) if p_type in ["star", "steady"] \
                                   else random.randint(-3, 2)
+                    deadline_dt     = now + timedelta(days=2)
+                    first_attempt_dt = now - timedelta(days=days_before)
+                    hours_diff = (deadline_dt - first_attempt_dt).total_seconds() / 3600
                     proximity.append({
-                        "student_key":        s_key,
-                        "course_key":         c["course_key"],
-                        "resource_key":       r["resource_key"],
-                        "deadline_date":      now + timedelta(days=2),
-                        "first_attempt_date": now - timedelta(days=days_before),
-                        "pressure_level":     "Safe"     if days_before >= 2 else
-                                              "Warning"  if days_before >= 0 else "Critical",
+                        "student_key":             s_key,
+                        "course_key":              c["course_key"],
+                        "resource_key":            r["resource_key"],
+                        "deadline_date":           deadline_dt,
+                        "first_attempt_date":      first_attempt_dt,
+                        "hours_before_deadline":   round(hours_diff, 2),
+                        "pressure_level":          "Safe"    if days_before >= 2 else
+                                                   "Warning" if days_before >= 0 else "Critical",
+                        "is_completed":            days_before >= 0,
                     })
 
     # -------------------------------------------------------------------------
@@ -478,16 +514,14 @@ def seed_data():
                     "transition_count":  random.randint(5, 25),
                 })
 
-        # Distribution & correlation per week
-        cram_base_count = sum(1 for t in student_profiles.values() if t == "procrastinator")
-        
-        # Sắp xếp tuần từ cũ đến mới để tạo trend
+        # Distribution per week
         sorted_weeks = sorted(last_8_weeks, key=lambda x: (x[0], x[1]))
-        
         for idx, (y, w) in enumerate(sorted_weeks):
-            # Số lượng cramming tăng dần theo thời gian (đạt đỉnh ở tuần cuối)
-            week_cram_count = int(cram_base_count * (0.2 + 0.8 * (idx / max(len(sorted_weeks)-1, 1))))
-            
+            active  = random.randint(30, 60)
+            medium  = random.randint(20, 40)
+            low     = random.randint(10, 20)
+            passive = random.randint(5, 15)
+            total   = active + medium + low + passive
             distribution.append({
                 "course_key":              c["course_key"],
                 "week_of_year":            w,
@@ -496,58 +530,56 @@ def seed_data():
                 "p25_engagement":          35,
                 "p50_engagement":          58,
                 "p75_engagement":          75,
-                "medium_engagement_count": random.randint(20, 40),
-                "low_engagement_count":    random.randint(10, 20),
-                "active_student_count":    random.randint(30, 60),
-                "passive_student_count":   random.randint(5, 15),
+                "excellent_student_count": int(total * 0.15),
+                "good_student_count":      int(total * 0.35),
+                "warning_student_count":   int(total * 0.30),
+                "critical_student_count":  int(total * 0.20),
+                "active_student_count":    active,
+                "medium_engagement_count": medium,
+                "low_engagement_count":    low,
+                "passive_student_count":   passive,
             })
+        patterns = ["High Cramming", "Moderate Cramming", "Planned"]
+        for a in actors:
+            s_key = a["actor_id"]
+            p_type = student_profiles.get(s_key, "steady")
+            pattern = "High Cramming" if p_type == "procrastinator" else \
+                      "Planned" if p_type in ["star", "early-bird"] else \
+                      random.choice(patterns)
+            hours = round(random.uniform(2, 10), 2) if pattern == "High Cramming" else \
+                    round(random.uniform(12, 47), 2) if pattern == "Moderate Cramming" else \
+                    round(random.uniform(48, 120), 2)
+            quiz_score = round(random.uniform(40, 65), 2) if pattern == "High Cramming" else \
+                         round(random.uniform(55, 80), 2) if pattern == "Moderate Cramming" else \
+                         round(random.uniform(70, 95), 2)
+            coeff = -0.7 if pattern == "High Cramming" and quiz_score < 60 else \
+                    -0.3 if pattern == "High Cramming" else \
+                    -0.2 if pattern == "Moderate Cramming" else \
+                    0.6 if quiz_score >= 80 else 0.3
+            interp = "High Risk - Procrastination affecting performance." if pattern == "High Cramming" and quiz_score < 60 else \
+                     "Moderate Risk - Cramming but managing." if pattern == "High Cramming" else \
+                     "Moderate Risk - Could improve with better planning." if pattern == "Moderate Cramming" else \
+                     "Excellent - Good planning and strong performance."
             correlation.append({
-                "course_key":                      c["course_key"],
-                "week_of_year":                    w,
-                "year":                            y,
-                "correlation_active_learning_score": random.randint(75, 95),
-                "correlation_cram_failure":          random.randint(60, 85),
-                "avg_final_score":                   round(random.uniform(60, 90), 2),
-                "cram_student_count":                week_cram_count,
+                "student_key":               s_key,
+                "course_key":                c["course_key"],
+                "behavior_pattern":          pattern,
+                "assignment_count":          random.randint(1, 8),
+                "avg_hours_before_deadline": hours,
+                "correlated_quiz_score":     quiz_score,
+                "correlation_coefficient":   coeff,
+                "interpretation":            interp,
             })
 
-    # -------------------------------------------------------------------------
-    # Final insert - Chuẩn bị dữ liệu với các cột đã fix
-    # -------------------------------------------------------------------------
-    
-    # For distribution, add excellent/good/warning/critical columns
-    distribution_final = []
-    for d in distribution:
-        d_final = d.copy()
-        # Calculate thresholds (Excellent 80-100, Good 60-79, Warning 40-59, Critical <40)
-        total_students = d['active_student_count'] + d['medium_engagement_count'] + d['low_engagement_count'] + d['passive_student_count']
-        d_final['excellent_student_count'] = int(total_students * 0.15)  # ~15% excellent
-        d_final['good_student_count'] = int(total_students * 0.35)       # ~35% good
-        d_final['warning_student_count'] = int(total_students * 0.30)    # ~30% warning
-        d_final['critical_student_count'] = int(total_students * 0.20)   # ~20% critical
-        distribution_final.append(d_final)
-    
-    # For deadline_proximity, add hours_before_deadline and is_completed
-    proximity_final = []
-    for p in proximity:
-        p_final = p.copy()
-        # Calculate hours before deadline
-        deadline = p['deadline_date']
-        first_attempt = p['first_attempt_date']
-        hours_diff = (deadline - first_attempt).total_seconds() / 3600
-        p_final['hours_before_deadline'] = round(hours_diff, 2)
-        p_final['is_completed'] = p['pressure_level'] != 'Critical'  # Assume non-critical are completed
-        proximity_final.append(p_final)
-    
     print("\n⏳ Đang nạp dữ liệu...")
     insert_many("fact_daily_student_engagement",      daily)
     insert_many("fact_risk_student_weekly",           risk_weekly)
     insert_many("fact_student_course_lifecycle",      lifecycle)
     insert_many("fact_student_time_affinity",         affinity)
-    insert_many("fact_student_deadline_proximity",    proximity_final)
+    insert_many("fact_student_deadline_proximity",    proximity)
     insert_many("fact_student_engagement_depth",      depth)
     insert_many("fact_activity_transitions",          transitions)
-    insert_many("fact_class_engagement_distribution", distribution_final)
+    insert_many("fact_class_engagement_distribution", distribution)
     insert_many("fact_behavior_outcome_correlation",  correlation)
 
     print("\n✨ Seed hoàn tất.")

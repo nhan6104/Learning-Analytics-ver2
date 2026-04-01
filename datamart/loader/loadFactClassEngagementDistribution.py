@@ -12,7 +12,7 @@ Fixes Bug 5: Engagement Distribution Thresholds
 from utils.pgsql_utils import db
 
 
-class LoadFactClassEngagementDistribution_v2:
+class LoadFactClassEngagementDistribution:
     def __init__(self):
         self.datamart_name = "datamart"
 
@@ -58,4 +58,3 @@ class LoadFactClassEngagementDistribution_v2:
             GROUP BY course_key, week_of_year, year;
         """
         db.execute_query(insert_query)
-        print("Successfully loaded FactClassEngagementDistribution V2 with updated thresholds.")

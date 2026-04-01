@@ -94,40 +94,20 @@ function applyStudentDataProgressive(data) {
         renderDeadlinesSection(data.deadlines || []);
     }, 100);
 
-    // Phase 4: Lazy loading with Intersection Observer
-    const observerOptions = {
-        root: null,
-        rootMargin: '100px',
-        threshold: 0.01
-    };
-
-    const lazyLoadObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const sectionId = entry.target.id;
-                
-                if (sectionId === 'transitions-section') {
-                    renderSankeyStudent(data.transitions || []);
-                    lazyLoadObserver.unobserve(entry.target);
-                } else if (sectionId === 'lifecycle-section') {
-                    renderLifecycleSection(data.lifecycle_milestones || {}, overview);
-                    lazyLoadObserver.unobserve(entry.target);
-                } else if (sectionId === 'heatmap-section') {
-                    renderHeatmapSection(data.daily_activity || []);
-                    lazyLoadObserver.unobserve(entry.target);
-                } else if (sectionId === 'insights-section') {
-                    renderInsightsSection(data);
-                    lazyLoadObserver.unobserve(entry.target);
-                }
-            }
+    // Phase 4: Render remaining sections directly
+    setTimeout(() => {
+        console.log('[SD] Phase4 data keys:', Object.keys(data));
+        console.log('[SD] transitions:', (data.transitions||[]).length, 'lifecycle:', JSON.stringify(data.lifecycle_milestones), 'daily:', (data.daily_activity||[]).length);
+        // Force show sections trước, các render function sẽ tự hide nếu không có data
+        ['transitions-section', 'lifecycle-section', 'heatmap-section', 'insights-section'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('hidden');
         });
-    }, observerOptions);
-
-    // Observe sections
-    ['transitions-section', 'lifecycle-section', 'heatmap-section', 'insights-section'].forEach(sectionId => {
-        const section = document.getElementById(sectionId);
-        if (section) lazyLoadObserver.observe(section);
-    });
+        renderSankeyStudent(data.transitions || []);
+        renderLifecycleSection(data.lifecycle_milestones || {}, overview);
+        renderHeatmapSection(data.daily_activity || []);
+        renderInsightsSection(data);
+    }, 200);
 }
 
 function applyStudentData(data) {

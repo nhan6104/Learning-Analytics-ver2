@@ -201,26 +201,30 @@ if ($action === 'getdata') {
         $stmt->execute([$studentkey, $coursekey]);
         $data['time_affinity'] = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         
-        // 6. Engagement Depth
+        // 6. Engagement Depth - all resources, not started if no interaction
         $stmt = $conn->prepare("
             SELECT 
                 r.resource_name,
-                d.engagement_type,
-                d.depth_ratio,
-                d.resource_key
-            FROM datamart.fact_student_engagement_depth d
-            JOIN datamart.dim_resource r ON CAST(d.resource_key AS VARCHAR) = CAST(r.resource_key AS VARCHAR)
-            WHERE d.student_key = ? AND CAST(d.course_key AS VARCHAR) = ?
+                COALESCE(d.engagement_type, 'Not Started') as engagement_type,
+                COALESCE(d.depth_ratio, 0) as depth_ratio,
+                r.resource_key
+            FROM datamart.dim_resource r
+            LEFT JOIN datamart.fact_student_engagement_depth d 
+                ON CAST(d.resource_key AS VARCHAR) = CAST(r.resource_key AS VARCHAR)
+                AND d.student_key = ?
+                AND CAST(d.course_key AS VARCHAR) = ?
+            WHERE CAST(r.course_key AS VARCHAR) = ?
             ORDER BY 
-                CASE d.engagement_type
+                CASE COALESCE(d.engagement_type, 'Not Started')
                     WHEN 'Stuck' THEN 1
                     WHEN 'Skimming' THEN 2
                     WHEN 'Deep Dive' THEN 3
-                    ELSE 4
+                    WHEN 'Normal' THEN 4
+                    ELSE 5
                 END,
-                d.depth_ratio DESC
+                COALESCE(d.depth_ratio, 0) DESC
         ");
-        $stmt->execute([$studentkey, $coursekey]);
+        $stmt->execute([$studentkey, $coursekey, $coursekey]);
         $data['engagement_depth'] = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         
         // 7. Deadline Proximity - Top 5 upcoming deadlines
@@ -581,14 +585,14 @@ echo $OUTPUT->header();
 
     <!-- Overview Metrics Section -->
     <div id="overview-metrics" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Overview Metrics</h2>
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Overview Metrics<span title="Tổng quan hiệu suất học tập của học sinh tuần gần nhất" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Engagement Score Card -->
             <div class="card">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500 mb-1">Engagement Score</p>
+                        <p class="text-sm font-medium text-slate-500 mb-1">Engagement Score<span title="Mức độ tham gia học tập (0-100 điểm). Càng cao càng tốt" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></p>
                         <p id="engagement-score" class="text-3xl font-bold text-slate-900">--</p>
                         <p class="text-xs text-slate-500 mt-1">out of 100</p>
                     </div>
@@ -604,7 +608,7 @@ echo $OUTPUT->header();
             <div class="card">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500 mb-1">Risk Level</p>
+                        <p class="text-sm font-medium text-slate-500 mb-1">Risk Level<span title="Nguy cơ bỏ học: Low (thấp) / Medium (trung bình) / High (cao) / Critical (rất cao)" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></p>
                         <div class="flex items-center gap-2">
                             <p id="risk-level" class="text-3xl font-bold text-slate-900">--</p>
                             <span id="risk-indicator" class="hidden w-3 h-3 rounded-full"></span>
@@ -623,7 +627,7 @@ echo $OUTPUT->header();
             <div class="card">
                 <div class="flex items-start justify-between">
                     <div class="w-full">
-                        <p class="text-sm font-medium text-slate-500 mb-1">Course Progress</p>
+                        <p class="text-sm font-medium text-slate-500 mb-1">Course Progress<span title="Phần trăm (%) bài học đã hoàn thành" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></p>
                         <p id="progress-pct" class="text-3xl font-bold text-slate-900">--%</p>
                         <div class="mt-3 w-full bg-slate-200 rounded-full h-2">
                             <div id="progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
@@ -637,7 +641,7 @@ echo $OUTPUT->header();
             <div class="card">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500 mb-1">Last Activity</p>
+                        <p class="text-sm font-medium text-slate-500 mb-1">Last Activity<span title="Số ngày kể từ lần học cuối cùng" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></p>
                         <p id="days-since-activity" class="text-3xl font-bold text-slate-900">--</p>
                         <p class="text-xs text-slate-500 mt-1">days ago</p>
                         <div id="activity-warning" class="hidden mt-2 flex items-center gap-1 text-xs text-amber-600">
@@ -674,7 +678,10 @@ echo $OUTPUT->header();
 
     <!-- Engagement Trend Chart Section -->
     <div id="engagement-trend-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Engagement Trend</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-slate-900">Engagement Trend<span title="Xu hướng tham gia học tập theo tuần so với trung bình lớp" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
+            <button onclick="viewTrendDetailSD()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+        </div>
         <div class="card">
             <div id="engagement-trend-chart"></div>
         </div>
@@ -682,7 +689,7 @@ echo $OUTPUT->header();
 
     <!-- Time Affinity Chart Section -->
     <div id="time-affinity-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Time Affinity Analysis</h2>
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Time Affinity Analysis<span title="Khung giờ nào học sinh học hiệu quả nhất trong ngày" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
         <div class="card">
             <div id="time-affinity-chart"></div>
             <div id="time-recommendation" class="mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
@@ -703,7 +710,7 @@ echo $OUTPUT->header();
 
     <!-- Class comparison -->
     <div id="comparison-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Class comparison</h2>
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Class comparison<span title="So sánh học sinh với trung bình lớp" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
         <div class="card">
             <div id="below-avg-banner" class="hidden mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm font-medium">
                 Engagement is more than 30% below the class average — consider additional support.
@@ -731,7 +738,10 @@ echo $OUTPUT->header();
 
     <!-- Engagement depth -->
     <div id="depth-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Engagement depth by resource</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-slate-900">Engagement depth by resource<span title="Mức độ tương tác với từng tài liệu học tập" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
+            <button onclick="viewDepthDetailSD()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+        </div>
         <div class="card overflow-x-auto">
             <div class="flex flex-wrap items-center gap-3 mb-4">
                 <label for="depth-filter" class="text-sm font-medium text-slate-600">Filter</label>
@@ -740,6 +750,8 @@ echo $OUTPUT->header();
                     <option value="Stuck">Stuck</option>
                     <option value="Skimming">Skimming</option>
                     <option value="Deep Dive">Deep Dive</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Not Started">Not Started</option>
                 </select>
             </div>
             <table class="min-w-full text-sm text-left">
@@ -758,13 +770,16 @@ echo $OUTPUT->header();
 
     <!-- Deadlines -->
     <div id="deadlines-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Upcoming deadlines</h2>
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Upcoming deadlines<span title="Các bài tập sắp đến hạn nộp" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
         <div class="card space-y-3" id="deadlines-list"></div>
     </div>
 
     <!-- Activity transitions (Sankey) -->
     <div id="transitions-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Activity transition flow</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-slate-900">Activity transition flow<span title="Luồng chuyển đổi giữa các tài liệu học tập" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
+            <button onclick="viewTransitionsDetailSD()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+        </div>
         <div class="card">
             <p id="review-loop-banner" class="hidden mb-3 text-sm font-semibold text-orange-700 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2">Review loop detected</p>
             <p id="back-edge-note" class="hidden mb-3 text-xs text-slate-600">Backward transitions (orange) are listed below the chart.</p>
@@ -775,7 +790,7 @@ echo $OUTPUT->header();
 
     <!-- Lifecycle milestones -->
     <div id="lifecycle-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Course lifecycle milestones</h2>
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Course lifecycle milestones<span title="Các mốc tiến độ quan trọng: 25%, 50%, 75%, 100%" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
         <div class="card space-y-4">
             <div id="dropout-banner" class="hidden p-4 rounded-xl bg-red-50 border border-red-200 text-red-900 text-sm"></div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm" id="milestone-grid"></div>
@@ -785,7 +800,10 @@ echo $OUTPUT->header();
 
     <!-- Daily heatmap -->
     <div id="heatmap-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Daily activity (90 days)</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-slate-900">Daily activity (90 days)<span title="Lịch sử học tập 90 ngày gần nhất" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
+            <button onclick="viewHeatmapDetailSD()" class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-lg transition-all active:scale-95">Xem chi tiết</button>
+        </div>
         <div class="card">
             <p class="text-xs text-slate-500 mb-3">Gray = no activity; darker = higher engagement. Red outline = inactive streak &gt; 3 days.</p>
             <div id="daily-heatmap" class="flex flex-wrap gap-1"></div>
@@ -794,7 +812,7 @@ echo $OUTPUT->header();
 
     <!-- Insights -->
     <div id="insights-section" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Insights &amp; recommendations</h2>
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Insights &amp; recommendations<span title="Gợi ý hỗ trợ học sinh dựa trên dữ liệu" style="cursor:help;color:#94a3b8;"><svg style="display:inline-block;width:16px;height:16px;margin-left:6px;vertical-align:middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/></svg></span></h2>
         <div class="card space-y-3" id="insights-list"></div>
     </div>
 
@@ -822,9 +840,145 @@ echo $OUTPUT->header();
 </script>
 
 <!-- External JavaScript (load in order) -->
-<script src="<?php echo new moodle_url('/local/microlearning/assets/js/student_detail.js'); ?>"></script>
-<script src="<?php echo new moodle_url('/local/microlearning/assets/js/student_detail_render.js'); ?>"></script>
-<script src="<?php echo new moodle_url('/local/microlearning/assets/js/student_detail_main.js'); ?>"></script>
+<script src="<?php echo new moodle_url('/local/microlearning/assets/js/student_detail.js'); ?>?v=<?php echo time(); ?>"></script>
+<script src="<?php echo new moodle_url('/local/microlearning/assets/js/student_detail_render.js'); ?>?v=<?php echo time(); ?>"></script>
+<script src="<?php echo new moodle_url('/local/microlearning/assets/js/student_detail_main.js'); ?>?v=<?php echo time(); ?>"></script>
+<script>
+// ── Student Detail — modal helper ──────────────────────────────────────────
+const SD_MODAL_ID = 'sd-detail-modal';
+
+function sdShowModal(title, html) {
+    let modal = document.getElementById(SD_MODAL_ID);
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = SD_MODAL_ID;
+        modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4';
+        modal.innerHTML = `
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="sdCloseModal()"></div>
+            <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-[95vw] h-full max-h-[95vh] flex flex-col relative z-10 overflow-hidden border border-slate-100">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-20">
+                    <h2 id="sd-modal-title" class="text-2xl font-extrabold text-slate-800"></h2>
+                    <button onclick="sdCloseModal()" class="p-2 hover:bg-slate-100 rounded-full">
+                        <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="sd-modal-body" class="p-4 md:p-8 overflow-y-auto flex-grow"></div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+    document.getElementById('sd-modal-title').textContent = title;
+    document.getElementById('sd-modal-body').innerHTML = html;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function sdCloseModal() {
+    const modal = document.getElementById(SD_MODAL_ID);
+    if (modal) modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
+// Engagement Trend — full history
+function viewTrendDetailSD() {
+    const cached = getCachedData(window.STUDENT_KEY, window.COURSE_KEY);
+    if (!cached) return;
+    sdShowModal('Xu hướng tương tác — Toàn bộ lịch sử', `<div id="sd-trend-full" class="min-h-[500px]"></div>`);
+    setTimeout(() => {
+        const trend = cached.engagement_trend || [];
+        const classAvg = cached.class_average || [];
+        const classMap = {};
+        classAvg.forEach(c => { classMap[`${c.year}-${c.week_of_year}`] = parseFloat(c.avg_engagement_score) || 0; });
+        new ApexCharts(document.querySelector('#sd-trend-full'), {
+            series: [
+                { name: 'Học sinh', data: trend.map(t => parseInt(t.engagement_score) || 0) },
+                { name: 'TB lớp', data: trend.map(t => classMap[`${t.year}-${t.week_of_year}`] || 0) }
+            ],
+            chart: { type: 'line', height: 500, toolbar: { show: true } },
+            stroke: { width: [3, 2], curve: 'smooth', dashArray: [0, 5] },
+            xaxis: { categories: trend.map(t => `T${t.week_of_year}/${t.year}`) },
+            colors: ['#6366f1', '#94a3b8'],
+            yaxis: { min: 0, max: 100, title: { text: 'Điểm tương tác' } },
+            legend: { position: 'top' },
+            annotations: { yaxis: [{ y: 50, borderColor: '#ef4444', label: { text: 'Ngưỡng rủi ro', style: { color: '#ef4444' } } }] }
+        }).render();
+    }, 50);
+}
+
+// Engagement Depth — full table with chart
+function viewDepthDetailSD() {
+    const cached = getCachedData(window.STUDENT_KEY, window.COURSE_KEY);
+    if (!cached) return;
+    const depth = cached.engagement_depth || [];
+    const typeColor = { 'Stuck': 'text-amber-600 font-bold', 'Skimming': 'text-sky-600', 'Deep Dive': 'text-emerald-600 font-bold', 'Normal': 'text-slate-500', 'Not Started': 'text-slate-300' };
+    const typeIcon = { 'Stuck': '⚠', 'Skimming': 'ⓘ', 'Deep Dive': '✓', 'Normal': '·', 'Not Started': '○' };
+    sdShowModal('Độ sâu tương tác — Tất cả tài nguyên', `
+        <div id="sd-depth-bar" class="min-h-[300px] mb-6"></div>
+        <table class="w-full text-sm text-left">
+            <thead class="text-[10px] uppercase text-slate-400 border-b font-black">
+                <tr><th class="py-3 pr-4">Tài nguyên</th><th class="py-3 pr-4">Loại</th><th class="py-3 pr-4">Depth ratio</th></tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                ${depth.map(r => `<tr class="hover:bg-slate-50">
+                    <td class="py-2 pr-4 font-medium text-slate-800">${escapeHtml(r.resource_name || '')}</td>
+                    <td class="py-2 pr-4 ${typeColor[r.engagement_type] || ''}">${typeIcon[r.engagement_type] || ''} ${r.engagement_type}</td>
+                    <td class="py-2 pr-4 font-mono">${r.depth_ratio != null ? Number(r.depth_ratio).toFixed(2) : '—'}</td>
+                </tr>`).join('')}
+            </tbody>
+        </table>
+    `);
+    setTimeout(() => {
+        const chartData = depth.filter(r => r.engagement_type !== 'Not Started');
+        if (!chartData.length) return;
+        new ApexCharts(document.querySelector('#sd-depth-bar'), {
+            series: [{ name: 'Depth ratio', data: chartData.map(r => parseFloat(r.depth_ratio) || 0) }],
+            chart: { type: 'bar', height: 300, toolbar: { show: false } },
+            plotOptions: { bar: { borderRadius: 6, distributed: true } },
+            colors: chartData.map(r => r.engagement_type === 'Stuck' ? '#f59e0b' : r.engagement_type === 'Skimming' ? '#38bdf8' : r.engagement_type === 'Deep Dive' ? '#10b981' : '#94a3b8'),
+            xaxis: { categories: chartData.map(r => (r.resource_name || '').substring(0, 18) + '...'), labels: { style: { fontSize: '10px' } } },
+            legend: { show: false },
+            yaxis: { title: { text: 'Depth ratio' } }
+        }).render();
+    }, 50);
+}
+
+// Activity Transitions — full table
+function viewTransitionsDetailSD() {
+    const cached = getCachedData(window.STUDENT_KEY, window.COURSE_KEY);
+    if (!cached) return;
+    const trans = cached.transitions || [];
+    sdShowModal('Luồng chuyển tiếp tài nguyên — Đầy đủ', `
+        <table class="w-full text-sm text-left">
+            <thead class="text-[10px] uppercase text-slate-400 border-b font-black">
+                <tr><th class="py-3 pr-4">Từ</th><th class="py-3 pr-4">Đến</th><th class="py-3 pr-4 text-center">Số lần</th></tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                ${trans.length ? trans.map(t => `<tr class="hover:bg-slate-50">
+                    <td class="py-2 pr-4 text-slate-700">${escapeHtml(t.from_resource || '')}</td>
+                    <td class="py-2 pr-4 text-slate-700">${escapeHtml(t.to_resource || '')}</td>
+                    <td class="py-2 pr-4 text-center font-mono font-bold">${t.transition_count}</td>
+                </tr>`).join('') : '<tr><td colspan="3" class="py-8 text-center text-slate-400 italic">Không có dữ liệu</td></tr>'}
+            </tbody>
+        </table>
+    `);
+}
+
+// Daily Heatmap — 365 days
+function viewHeatmapDetailSD() {
+    sdShowModal('Lịch sử hoạt động hàng ngày — 365 ngày', `<div id="sd-heatmap-full" class="flex flex-wrap gap-1 p-2"></div><p class="text-xs text-slate-400 mt-3 px-2">Xám = không hoạt động | Xanh đậm = tương tác cao | Viền đỏ = chuỗi không hoạt động > 3 ngày</p>`);
+    const studentKey = window.STUDENT_KEY;
+    const courseKey = window.COURSE_KEY;
+    fetch(`?action=getdata&student_key=${encodeURIComponent(studentKey)}&course_key=${encodeURIComponent(courseKey)}&viewall=1`)
+        .then(r => r.json())
+        .then(data => {
+            const container = document.getElementById('sd-heatmap-full');
+            if (!container) return;
+            renderHeatmapSection(data.daily_activity || [], container);
+        })
+        .catch(err => console.error(err));
+}
+</script>
 
 <?php
 echo $OUTPUT->footer();

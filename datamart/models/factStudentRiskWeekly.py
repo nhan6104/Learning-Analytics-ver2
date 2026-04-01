@@ -16,6 +16,10 @@ class FactRiskStudentWeekly:
             engagement_score INT,
             progress_score INT,
             outcome_score INT,
+            engagement_trend DECIMAL(10,2),
+            inactivity_days INT,
+            progress_lag_pct DECIMAL(10,2),
+            social_isolation_score INT,
             risk_score INT,
             dropout_probability_pct DECIMAL(5,2),
             risk_level VARCHAR(255)

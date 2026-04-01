@@ -11,6 +11,7 @@ function iconForDepthType(t) {
     if (t === 'Stuck') return '<span class="text-amber-500" title="Stuck">⚠</span>';
     if (t === 'Skimming') return '<span class="text-sky-500" title="Skimming">ⓘ</span>';
     if (t === 'Deep Dive') return '<span class="text-emerald-500" title="Deep Dive">✓</span>';
+    if (t === 'Not Started') return '<span class="text-slate-300" title="Not Started">○</span>';
     return '';
 }
 
@@ -88,7 +89,8 @@ function renderSankeyStudent(linksRaw) {
     document.getElementById('back-edge-note').classList.add('hidden');
 
     if (!linksRaw || !linksRaw.length) {
-        document.getElementById('transitions-section').classList.add('hidden');
+        document.getElementById('transitions-section').classList.remove('hidden');
+        container.innerHTML = '<p class="text-slate-400 italic text-sm py-4">No transition data available.</p>';
         return;
     }
     document.getElementById('transitions-section').classList.remove('hidden');
@@ -245,11 +247,12 @@ function renderLifecycleSection(ms, overview) {
     estEl.textContent = '';
     drop.classList.add('hidden');
 
+    sec.classList.remove('hidden');
+
     if (!ms || Object.keys(ms).length === 0) {
-        sec.classList.add('hidden');
+        grid.innerHTML = '<div class="col-span-4 text-slate-400 italic text-sm py-4">No milestone data available.</div>';
         return;
     }
-    sec.classList.remove('hidden');
 
     const fmt = (v) => {
         if (!v) return 'Not reached';
@@ -284,15 +287,21 @@ function renderLifecycleSection(ms, overview) {
     }
 }
 
-function renderHeatmapSection(daily) {
+function renderHeatmapSection(daily, targetContainer) {
     const section = document.getElementById('heatmap-section');
-    const container = document.getElementById('daily-heatmap');
+    const container = targetContainer || document.getElementById('daily-heatmap');
     container.innerHTML = '';
+    if (!targetContainer) {
+        section.classList.remove('hidden');
+        if (!daily || !daily.length) {
+            container.innerHTML = '<p class="text-slate-400 italic text-sm py-4">No daily activity data available.</p>';
+            return;
+        }
+    }
     if (!daily || !daily.length) {
-        section.classList.add('hidden');
+        container.innerHTML = '<p class="text-slate-400 italic text-sm py-4">No daily activity data available.</p>';
         return;
     }
-    section.classList.remove('hidden');
 
     const sorted = [...daily].sort((a, b) => {
         const da = new Date(a.year, (parseInt(a.month, 10) || 1) - 1, parseInt(a.date, 10) || 1);
@@ -384,12 +393,12 @@ function renderInsightsSection(data) {
     const list = document.getElementById('insights-list');
     const sec = document.getElementById('insights-section');
     list.innerHTML = '';
+    sec.classList.remove('hidden');
     const insights = buildInsights(data);
     if (!insights.length) {
-        sec.classList.add('hidden');
+        list.innerHTML = '<div class="text-slate-400 italic text-sm py-4">No actionable insights at this time.</div>';
         return;
     }
-    sec.classList.remove('hidden');
     insights.forEach(ins => {
         const badge = ins.priority === 1 ? 'bg-red-100 text-red-800' : 'bg-amber-50 text-amber-900';
         const pr = ins.priority === 1 ? 'High' : 'Medium';

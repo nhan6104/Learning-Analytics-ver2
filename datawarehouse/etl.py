@@ -28,7 +28,7 @@ class ETLProcess:
 
     def execute_test_pipeline(self):
         
-        with open("sample_data.json", "r", encoding="utf-8") as f:
+        with open("steady_scaled.json", "r", encoding="utf-8") as f:
             raw_data = json.load(f)
 
         group_data = {}

@@ -12,7 +12,7 @@ Fixes Bug 4: Activity Transitions Resource Extraction
 from utils.pgsql_utils import db
 
 
-class LoadFactActivityTransitions_v2:
+class LoadFactActivityTransitions:
     def __init__(self):
         self.dw = "datawarehouse"
         self.dm = "datamart"
@@ -74,4 +74,3 @@ class LoadFactActivityTransitions_v2:
             GROUP BY course_key, from_resource_key, to_resource_key;
         """
         db.execute_query(insert_query)
-        print("Successfully loaded FactActivityTransitions V2 with proper resource key matching.")

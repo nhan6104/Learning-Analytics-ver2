@@ -13,7 +13,7 @@ Fixes Bug 6: Behavior Outcome Correlation
 from utils.pgsql_utils import db
 
 
-class LoadFactBehaviorOutcomeCorrelation_v2:
+class LoadFactBehaviorOutcomeCorrelation:
     def __init__(self):
         self.datawarehouse_name = "datawarehouse"
         self.datamart_name = "datamart"
@@ -123,4 +123,3 @@ class LoadFactBehaviorOutcomeCorrelation_v2:
             FROM correlation_calc;
         """
         db.execute_query(insert_query)
-        print("Successfully loaded FactBehaviorOutcomeCorrelation V2 with cramming detection.")

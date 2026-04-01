@@ -14,7 +14,7 @@ Fixes Bug 1: Risk Score Calculation
 from utils.pgsql_utils import db
 
 
-class LoadFactStudentRiskWeekly_v2:
+class LoadFactStudentRiskWeekly:
     def __init__(self):
         self.datamart_name = "datamart"
 
@@ -208,4 +208,3 @@ class LoadFactStudentRiskWeekly_v2:
                 AND wt.year = si.year;
         """
         db.execute_query(insert_query)
-        print("Successfully loaded FactStudentRiskWeekly V2 with multi-factor risk calculation.")

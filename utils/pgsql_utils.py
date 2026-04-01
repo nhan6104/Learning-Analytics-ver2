@@ -12,6 +12,11 @@ class PostgresDB:
 
     def get_connection (self):
         try :
+            ssl_cert = os.getenv("PGSQL_SSL_ROOT_CERT")
+            # Convert relative path to absolute if needed
+            if ssl_cert and not os.path.isabs(ssl_cert):
+                ssl_cert = os.path.abspath(ssl_cert)
+            
             connection = psycopg2.connect(
                 host=os.getenv("PGSQL_HOST"),
                 port=os.getenv("PGSQL_PORT"),
@@ -19,7 +24,7 @@ class PostgresDB:
                 user=os.getenv("PGSQL_USER"),
                 password=os.getenv("PGSQL_PASSWORD"),
                 sslmode=os.getenv("PGSQL_SSL_MODE", "prefer"),
-                sslrootcert=os.getenv("PGSQL_SSL_ROOT_CERT")
+                sslrootcert=ssl_cert
             )
 
             return connection
@@ -32,6 +37,8 @@ class PostgresDB:
         query = f"""CREATE SCHEMA IF NOT EXISTS {schema_name};"""
         
         connection = self.get_connection()
+        if not connection:
+            raise Exception("Failed to establish database connection")
 
         with connection.cursor() as cursor:
             cursor.execute(query)
@@ -44,6 +51,8 @@ class PostgresDB:
     def create_table (self, table_name, schema):
         query = f"CREATE TABLE IF NOT EXISTS {self.schema}.{table_name} ({schema})"
         connection = self.get_connection()
+        if not connection:
+            raise Exception("Failed to establish database connection")
 
         with connection.cursor() as cursor:
             cursor.execute(query)
@@ -54,6 +63,8 @@ class PostgresDB:
 
     def execute_query(self, query, params=None):
         connection = self.get_connection()
+        if not connection:
+            raise Exception("Failed to establish database connection")
         result = None
         with connection.cursor() as cursor:
             cursor.execute(query, params)
@@ -77,6 +88,8 @@ class PostgresDB:
         values = tuple(object[k] for k in keys)
         
         connection = self.get_connection()
+        if not connection:
+            raise Exception("Failed to establish database connection")
         with connection.cursor() as cursor:
             cursor.execute(query, values)
             connection.commit()
@@ -97,6 +110,8 @@ class PostgresDB:
         values = tuple(object[k] for k in keys) + (condition_value, )
         
         connection = self.get_connection()
+        if not connection:
+            raise Exception("Failed to establish database connection")
         with connection.cursor() as cursor:
             cursor.execute(query, values)
             connection.commit()
@@ -122,11 +137,14 @@ class PostgresDB:
 
         values = [tuple(obj[k] for k in keys) for obj in objects]
         
-        connetcion = self.get_connection()
-        with connetcion.cursor() as cursor:
+        connection = self.get_connection()
+        if not connection:
+            raise Exception("Failed to establish database connection")
+            
+        with connection.cursor() as cursor:
             cursor.executemany(query, values)
-            connetcion.commit()
+            connection.commit()
 
-        connetcion.close()
+        connection.close()
 
 db = PostgresDB()

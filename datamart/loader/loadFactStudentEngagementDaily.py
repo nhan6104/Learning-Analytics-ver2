@@ -1,6 +1,6 @@
 from utils.pgsql_utils import db
 
-class LoadFactStudentEngagementDailyV2:
+class LoadFactStudentEngagementDaily:
     """
     Enhanced Engagement Score Calculation based on REAL Student Behavior
     
@@ -215,19 +215,3 @@ class LoadFactStudentEngagementDailyV2:
         """
         
         db.execute_query(insert_query)
-        print("✅ Successfully loaded FactStudentEngagementDaily V2 (Realistic - No Time).")
-        print("📊 Realistic Scoring Breakdown:")
-        print("   - Resource Interaction: 70 points (quality-weighted, main component)")
-        print("   - Quiz Bonus: 30 points (bonus when available, not required)")
-        print("   - Total: 100 points max")
-        print("")
-        print("⚠️  Why NO time score:")
-        print("   - xAPI only has timestamps, not actual study time")
-        print("   - session_duration = last_event - first_event (includes idle)")
-        print("   - Not accurate for measuring real learning time")
-        print("")
-        print("🎯 Focus on WHAT students do, not HOW LONG:")
-        print("   - Deep learning > Quick clicks")
-        print("   - Quality > Quantity")
-        print("   - Quiz is bonus, not requirement")
-        print("   - Only score days with activity")

@@ -14,6 +14,12 @@ class FactStudentTimeAffinity:
             efficiency_index DECIMAL(5,2),
             total_engagement_score INT,
             session_count INT,
+            student_avg_efficiency DECIMAL(5,2),
+            relative_efficiency DECIMAL(10,2),
+            is_peak_time BOOLEAN,
+            peak_rank INT,
+            interpretation TEXT,
+            recommendation TEXT,
             CONSTRAINT PK_fact_student_time_affinity PRIMARY KEY (student_key, course_key, time_slot)
             """
         self.db.create_table(self.table_name, schema)

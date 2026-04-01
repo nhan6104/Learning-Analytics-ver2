@@ -14,7 +14,7 @@ from utils.pgsql_utils import db
 from datetime import datetime
 
 
-class LoadFactStudentCourseLifeCycle_v2:
+class LoadFactStudentCourseLifeCycle:
     def __init__(self):
         self.datamart_name = "datamart"
         self.moodle_db = moodle_db
@@ -31,7 +31,6 @@ class LoadFactStudentCourseLifeCycle_v2:
             
             # Handle edge cases
             if not total_modules or total_modules == 0:
-                print(f"Skipping course {course_key}: total_modules is 0 or NULL")
                 continue
 
             # Fetch completion data from Moodle for this course
@@ -173,5 +172,3 @@ class LoadFactStudentCourseLifeCycle_v2:
                     except Exception as e:
                         print(f"Error inserting record for student {rec[0]}, course {rec[1]}: {e}")
                         continue
-        
-        print("Successfully loaded FactStudentCourseLifeCycle V2 with safe milestone calculation.")

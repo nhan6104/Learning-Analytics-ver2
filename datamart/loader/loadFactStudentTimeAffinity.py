@@ -14,7 +14,7 @@ Fixes Bug 3: Time Affinity Metric
 from utils.pgsql_utils import db
 
 
-class LoadFactStudentTimeAffinity_v2:
+class LoadFactStudentTimeAffinity:
     def __init__(self):
         self.dm = "datamart"
 
@@ -131,4 +131,3 @@ class LoadFactStudentTimeAffinity_v2:
                 AND bm.time_slot = pi.time_slot;
         """
         db.execute_query(insert_query)
-        print("Successfully loaded FactStudentTimeAffinity V2 with contextual interpretation and recommendations.")

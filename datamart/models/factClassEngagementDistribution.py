@@ -16,9 +16,13 @@ class FactClassEngagementDistribution:
             p25_engagement INT,
             p50_engagement INT,
             p75_engagement INT,
+            excellent_student_count INT,
+            good_student_count INT,
+            warning_student_count INT,
+            critical_student_count INT,
+            active_student_count INT,
             medium_engagement_count INT,
             low_engagement_count INT,
-            active_student_count INT,
             passive_student_count INT
             """
         

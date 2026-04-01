@@ -14,7 +14,7 @@ from utils.moodle_db_utils import moodle_db
 from utils.pgsql_utils import db
 
 
-class LoadFactStudentDeadlineProximity_v2:
+class LoadFactStudentDeadlineProximity:
     def __init__(self):
         self.dm = "datamart"
         self.dw = "datawarehouse"
@@ -61,7 +61,3 @@ class LoadFactStudentDeadlineProximity_v2:
                     OR TO_TIMESTAMP(%s) > NOW();  -- Include completed if deadline not passed
             """
             db.execute_query(insert_query, (deadline_ts, deadline_ts, deadline_ts, deadline_ts, deadline_ts, q['id'], deadline_ts))
-
-        # Note: Assignment deadline tracking skipped - mdl_assign_submission table not available in this Moodle instance
-            
-        print("Successfully loaded FactStudentDeadlineProximity V2 with current time calculation and completion check.")
