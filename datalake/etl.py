@@ -1,7 +1,7 @@
 
 from datalake.extract import DataExtractor
 from datalake.transform import DataTransformer
-from datawarehouse.load import DataLoader
+from datalake.load import DataLoader
 
 class ETLProcessor:
     def __init__(self):
@@ -19,3 +19,5 @@ class ETLProcessor:
         # Load
         self.loader.load(transformed_data)
 
+
+ETLProcessor().execute()

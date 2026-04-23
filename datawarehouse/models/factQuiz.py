@@ -17,30 +17,31 @@ class FactQuiz:
             start_time TIMESTAMP ,
             end_time TIMESTAMP ,
             score INT ,
-            isComplete BOOLEAN ,
+            completion_status BOOLEAN ,
             isSucceed BOOLEAN ,
             time_id VARCHAR(255) ,
             duration BIGINT ,
+            context_id VARCHAR(255) ,
             CONSTRAINT PK_fact_quiz PRIMARY KEY (quiz_attempt_id),
             CONSTRAINT FK_fact_quiz_actor FOREIGN KEY (actor_id) REFERENCES {schema_name}.dim_actor(actor_id),
-            CONSTRAINT FK_fact_quiz_time FOREIGN KEY (time_id) REFERENCES {schema_name}.dim_time(time_id)
+            CONSTRAINT FK_fact_quiz_time FOREIGN KEY (time_id) REFERENCES {schema_name}.dim_time(time_id),
+            CONSTRAINT FK_fact_quiz_context FOREIGN KEY (context_id) REFERENCES {schema_name}.dim_context(context_id)
             """
         
         self.db.create_table(self.table_name, schema)
 
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = """ ON CONFLICT (quiz_attempt_id)
                         DO UPDATE SET
-                            total_score = COALESCE(EXCLUDED.total_score, fact_quiz.total_score),
-                            max_score   = COALESCE(EXCLUDED.max_score, fact_quiz.max_score),
-                            quiz_id     = COALESCE(EXCLUDED.quiz_id, fact_quiz.quiz_id),
-                            isComplete  = COALESCE(EXCLUDED.isComplete, fact_quiz.isComplete),
-                            isSucceed   = COALESCE(EXCLUDED.isSucceed, fact_quiz.isSucceed),
-                            raw_duration_ms = COALESCE(EXCLUDED.raw_duration_ms, fact_quiz.raw_duration_ms),
-                            attempt_no  = COALESCE(EXCLUDED.attempt_no, fact_quiz.attempt_no),
+                            score = COALESCE(EXCLUDED.score, fact_quiz.score),
+                            quiz_id = COALESCE(EXCLUDED.quiz_id, fact_quiz.quiz_id),
+                            completion_status = COALESCE(EXCLUDED.completion_status, fact_quiz.completion_status),
+                            isSucceed = COALESCE(EXCLUDED.isSucceed, fact_quiz.isSucceed),
+                            duration = COALESCE(EXCLUDED.duration, fact_quiz.duration),
+                            attempt_no = COALESCE(EXCLUDED.attempt_no, fact_quiz.attempt_no),
                             end_time = CASE
-                                WHEN EXCLUDED.isComplete = 1 THEN EXCLUDED.end_time
+                                WHEN EXCLUDED.completion_status = TRUE THEN EXCLUDED.end_time
                                 ELSE fact_quiz.end_time
                             END;
                     """
-        self.db.insert_many_records(self.table_name, objects, condition)
+        self.db.insert_many_records(conn, self.table_name, objects, condition)

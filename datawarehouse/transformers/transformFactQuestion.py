@@ -7,8 +7,20 @@ logger = logging.getLogger(__name__)
 class transformFactQuestion:
     def __init__(self):
         self.db = moodle_db
+        self.extractor = DataExtractor()
 
-    
+    def _generate_quiz_attempt_id(self, statement) -> str:
+        """Generate a unique quiz_attempt_id from registration + quiz cmid"""
+        registration = statement.context.registration if statement.context else "no_reg"
+        cmid = DataExtractor.extract_moodle_module_id(statement.object.id)
+        
+        if cmid:
+            raw = f"{registration}_{cmid}"
+        else:
+            raw = f"{registration}_{statement.object.id}"
+            
+        return str(DataExtractor.normalize_uuid(raw))
+
     def _get_quiz_metadata(self, cmid, actor_id):
         """Fetch max_score, attempt_no, quiz_id and attempt_id from Moodle"""
         max_score = None
@@ -96,7 +108,7 @@ class transformFactQuestion:
         actor_id = statement.actor.account.name if statement.actor.account else None
         
         # 1. Generate quiz_attempt_id
-        m_attempt_id = self.extractor.extract_moodle_attempt_id(statement)
+        m_attempt_id = DataExtractor.extract_moodle_attempt_id(statement)
         if m_attempt_id:
             quiz_attempt_id = str(m_attempt_id)
         else:
@@ -104,20 +116,30 @@ class transformFactQuestion:
             
         # 2. Extract metadata for the parent quiz
         cmid = DataExtractor.extract_moodle_module_id(statement.object.id)
-        max_score, attempt_no, quiz_id, _ = self._get_quiz_metadata(cmid, actor_id)
+        max_score, attempt_no, quiz_id, m_attempt_id2 = self._get_quiz_metadata(cmid, actor_id)
+        
+        # Map quiz_attempt_id to Moodle attempt id if available
+        if m_attempt_id2:
+            quiz_attempt_id = str(m_attempt_id2)
         
         # 3. Ensure parent quiz exists (Rich Upsert)
         start_time = DataExtractor.parse_timestamp(statement.timestamp)
         
-        selected_answer = statement.result.response if statement.result else None
-        is_correct = statement.result.success if statement.result else None
+        selected_answer = None
+        is_correct = None
+        if statement.result:
+            selected_answer = statement.result.response
+            if statement.result.extensions and "http://learninglocker.net/xapi/cmi/choice/response" in statement.result.extensions:
+                selected_answer = statement.result.extensions["http://learninglocker.net/xapi/cmi/choice/response"]
+            is_correct = statement.result.success
 
         return {
             "question_id": question_id,
             "quiz_attempt_id": quiz_attempt_id,
+            "selected_answer": selected_answer,
+            "is_correct": is_correct,
             "quiz_id": quiz_id,
             "start_time": start_time,
-            "selected_answer": selected_answer,
             "attempt_no": attempt_no,
-            "is_correct": is_correct,
         }
+    

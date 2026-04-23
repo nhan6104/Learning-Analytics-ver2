@@ -8,10 +8,9 @@ class DataExtractor:
         self.minioClient = MinioClient()
         self.bucket_name = os.getenv("MINIO_BUCKET_NAME")
 
-    def getObjectNames(self, date_to_extract: str, range_time_to_extract = None):
+    def getObjectNames(self, date_to_extract):
         """
             date_to_extract: Date which want to extract data
-            range_time_to_extract: Range time in Date want to extract
         """
         # clean_date = str(date_to_extract).split(' ')[0].replace('-', '/')
         # print(date_to_extract, self.bucket_name)

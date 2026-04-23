@@ -17,10 +17,10 @@ class DimInteractionType:
         
         self.db.create_table(self.table_name, schema)
 
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = """ ON CONFLICT (interaction_id)
                         DO UPDATE SET
                             interaction_name = EXCLUDED.interaction_name,
                             interaction_category = EXCLUDED.interaction_category;
                     """
-        self.db.insert_many_records(self.table_name, objects, condition )
+        self.db.insert_many_records(conn, self.table_name, objects, condition )

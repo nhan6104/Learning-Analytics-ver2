@@ -25,6 +25,7 @@ class LoadDimTime:
                         day_of_week,
                         time_slot
                     FROM {self.datawarhouse_name}.dim_time
+                    ON CONFLICT (time_id) DO NOTHING
                 """
         db.execute_query(query)
     

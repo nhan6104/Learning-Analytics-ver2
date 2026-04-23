@@ -6,5 +6,5 @@ class LoadFactBehaviorOutcomeCorrelation:
         self.datamart_name = "datamart"
 
     def load(self):
-       pass
+        pass
        

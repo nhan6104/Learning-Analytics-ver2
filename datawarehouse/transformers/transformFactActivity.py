@@ -1,6 +1,7 @@
 import logging
 from utils.dataExtractorUtils import DataExtractor
 from utils.moodle_db_utils import moodle_db
+from urllib.parse import urlparse, parse_qs
 
 
 logger = logging.getLogger(__name__)
@@ -9,7 +10,79 @@ class transformFactActivity:
 
     def __init__(self):
         self.db = moodle_db
-        
+
+    def parse_activity_id(self, url: str):
+        url = url.strip('"')
+
+        parsed = urlparse(url)
+        path_parts = parsed.path.strip('/').split('/')
+        query = parse_qs(parsed.query)
+
+        module = None
+        resource = None
+        primary_id = None
+        attempt_id = None
+        question_id = None
+        chapter_id = None
+
+        # ===== 1. Detect module + resource =====
+        if "mod" in path_parts:
+            idx = path_parts.index("mod")
+            module = path_parts[idx + 1]                  # book
+            resource = path_parts[-1].split('.')[0]       # view
+
+        elif "course" in path_parts:
+            module = "course"
+            resource = path_parts[-1].split('.')[0]         # view / section
+
+        elif "question" in path_parts:
+            module = "quiz"                                 # normalize
+            resource = "question"
+
+        else:
+            # fallback (review.php, etc.)
+            module = "quiz"
+            resource = path_parts[-1].split('.')[0]
+
+        # ===== 2. Extract IDs =====
+        if module == "course":
+            primary_id = query.get("id", [None])[0]
+
+        elif module == "quiz":
+            primary_id = query.get("cmid", query.get("id", [None]))[0]
+            attempt_id = query.get("attempt", [None])[0]
+
+            if resource == "question":
+                question_id = query.get("id", [None])[0]
+
+        elif module == "book":
+            primary_id = query.get("id", [None])[0]
+            chapter_id = query.get("chapterid", [None])[0]
+        else:
+            # forum / resource / assign
+            primary_id = query.get("id", [None])[0]
+
+        # ===== 3. Build activity_id =====
+        if module == "book" and chapter_id:
+            resource = "chapter"
+
+        parts = [module, resource]
+
+        if primary_id:
+            parts.append(str(primary_id))
+
+        if attempt_id:
+            parts.append(str(attempt_id))
+
+        if question_id:
+            parts.append(str(question_id))
+
+        if chapter_id:
+            parts.append(str(chapter_id))
+
+        activity_id = "_".join(parts)
+
+        return activity_id
 
     def transform(self, statement, kwargs = {}):
         
@@ -25,12 +98,13 @@ class transformFactActivity:
             return res
         
 
-        activityId = statement.object.id.split('/')       
-        activity = activityId[-2]
-        resource = activityId[-1].split('.')[0]
-        idResource = activityId[-1].split('=')[1]
+        # activityId = statement.object.id.split('/')       
+        # activity = activityId[-2]
+        # resource = activityId[-1].split('.')[0]
+        # print(activityId)
+        # idResource = activityId[-1].split('=')[1]
 
-        activity_id = activity + '_' + resource + '_' + idResource
+        activity_id = self.parse_activity_id(statement.object.id)
 
 
         actor_id = None
@@ -75,11 +149,7 @@ class transformFactActivity:
             res.append(activityEl)
             offset = 0
             for el in  statement.context.contextActivities.parent:
-                parentId = el.id.split('/')       
-                parentActivity = parentId[-2]
-                parentResource = parentId[-1].split('.')[0]
-                parentIdResource = parentId[-1].split('=')[1]
-                parent_activity_id = parentActivity + '_' + parentResource + '_' + parentIdResource
+                parent_activity_id = self.parse_activity_id(el.id)
 
                 parent_activity_type = ""
                 if el.definition:

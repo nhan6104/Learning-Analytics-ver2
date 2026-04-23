@@ -26,30 +26,33 @@ class DataLoader:
         self.factSessionModel = FactSession()
         self.factActivityModel = FactActivity()  
 
-    def insert_data(self, table_name, data):
+    def insert_data(self, conn, table_name, data):
         if table_name == "fact_statement":
-            self.factStatementModel.insert_many_records(data)
+            self.factStatementModel.insert_many_records(conn, data)
         elif table_name == "fact_session":  
-            self.factSessionModel.insert_many_records(data)
+            self.factSessionModel.insert_many_records(conn, data)
         elif table_name == "fact_activity": 
-            self.factActivityModel.insert_many_records(data)
+            self.factActivityModel.insert_many_records(conn, data)
         elif table_name == "fact_quiz": 
-            self.factQuizModel.insert_many_records(data)
+            self.factQuizModel.insert_many_records(conn, data)
         elif table_name == "dim_interaction_type":
-            self.dimInteractionTypeModel.insert_many_records(data)
+            self.dimInteractionTypeModel.insert_many_records(conn, data)
         elif table_name == "dim_context":
-            self.dimContextModel.insert_many_records(data)
+            self.dimContextModel.insert_many_records(conn, data)
         elif table_name == "dim_time":
-            self.dimTimeModel.insert_many_records(data)
+            self.dimTimeModel.insert_many_records(conn, data)
         elif table_name == "fact_question":
-            self.factQuestionModel.insert_many_records(data)
+            self.factQuestionModel.insert_many_records(conn, data)
         elif table_name == "dim_actor":
-            self.dimActorModel.insert_many_records(data)
+            self.dimActorModel.insert_many_records(conn, data)
 
 
     def load_data(self, statements):
+        conn = self.db.get_connection()
         for table_name, data in statements.items():
             if data and len(data) > 0:
-                self.insert_data(table_name, data)
-
+                self.insert_data(conn, table_name, data)
+        
+        conn.commit()
+        conn.close()
     

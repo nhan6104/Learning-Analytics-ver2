@@ -1,23 +1,28 @@
 from tkinter import INSERT
 
 import psycopg2
+from psycopg2.extras import execute_values
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
 class PostgresDB:
 
-    def __init__(self):
-        self.schema = "" 
+    def __init__(self, schema="", dbname=""):
+        self.schema = schema
+        self.dbname = dbname
 
     def get_connection (self):
         try :
+
             connection = psycopg2.connect(
                 host=os.getenv("PGSQL_HOST"),
                 port=os.getenv("PGSQL_PORT"),
-                dbname=os.getenv("PGSQL_DBNAME"),
+                dbname=os.getenv("PGSQL_DBNAME") if self.dbname == "" else self.dbname,
                 user=os.getenv("PGSQL_USER"),
-                password=os.getenv("PGSQL_PASSWORD")
+                password=os.getenv("PGSQL_PASSWORD"),
+                sslmode=os.getenv("PGSQL_SSL_MODE", "prefer"),
+                sslrootcert=os.getenv("PGSQL_SSL_ROOT_CERT")
             )
 
             return connection
@@ -52,13 +57,15 @@ class PostgresDB:
 
     def execute_query(self, query, params=None):
         connection = self.get_connection()
+        result = None
         with connection.cursor() as cursor:
             cursor.execute(query, params)
-            result = cursor.fetchall()
+            rows = cursor.fetchall()
+            columns = [desc[0] for desc in cursor.description]
 
         connection.close()
 
-        return result
+        return columns, rows
     
     def insert_record(self, table_name, object):
         keys = list(object.keys())
@@ -94,34 +101,30 @@ class PostgresDB:
         connection = self.get_connection()
         with connection.cursor() as cursor:
             cursor.execute(query, values)
-            connection.commit()
-
+        
+        connection.commit()
         connection.close()
+
     
     def get_schema_name (self):
         return self.schema
     
-    def insert_many_records(self, table_name, objects, condition = None):
+    def insert_many_records(self, conn, table_name, objects, condition = None):
 
         keys = list(objects[0].keys())
         columns = ', '.join(keys)
-        placeholders = ",".join(["%s"] * len(keys))
-        
+
         query = f"""
             INSERT INTO {self.schema}.{table_name} ({columns})
-            VALUES ({placeholders}) 
+            VALUES %s
         """
-        if condition is not None:
+
+        if condition:
             query += condition
 
-
         values = [tuple(obj[k] for k in keys) for obj in objects]
-        
-        connetcion = self.get_connection()
-        with connetcion.cursor() as cursor:
-            cursor.executemany(query, values)
-            connetcion.commit()
+        with conn.cursor() as cursor:
+            execute_values(cursor, query, values)
 
-        connetcion.close()
 
 db = PostgresDB()

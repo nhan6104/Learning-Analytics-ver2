@@ -14,5 +14,6 @@ class LoadDimActor:
             actor_id,
             actor_name
         FROM {self.datawarhouse_name}.dim_actor
+        ON CONFLICT (actor_id) DO NOTHING
         """
-        return query
+        db.execute_query(query)

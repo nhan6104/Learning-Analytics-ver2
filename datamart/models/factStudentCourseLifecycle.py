@@ -1,7 +1,7 @@
 from utils.pgsql_utils import db
 
 
-class FactStudentCourseLifeCyle:
+class FactStudentCourseLifeCycle:
     def __init__(self):
         self.db = db
         self.table_name = "fact_student_course_lifecycle"
@@ -21,7 +21,8 @@ class FactStudentCourseLifeCyle:
             total_module_count INT,
             current_status VARCHAR(255),
             days_since_last_activity INT,
-            last_activity_date DATE
+            last_activity_date DATE,
+            CONSTRAINT PK_fact_student_course_lifecycle PRIMARY KEY (student_key, course_key)
             """
         
         self.db.create_table(self.table_name, schema)

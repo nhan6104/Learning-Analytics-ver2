@@ -9,10 +9,10 @@ class DimCourse:
 
     def create_table(self):
         schema = """
-            course_key VARCHAR(255) ,
+            course_key VARCHAR(255) PRIMARY KEY,
             course_name VARCHAR(255),
             course_level VARCHAR(255),
-            total_modules INT,
+            total_modules INT
             """
         
         self.db.create_table(self.table_name, schema)
