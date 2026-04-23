@@ -30,7 +30,7 @@ class FactQuiz:
         
         self.db.create_table(self.table_name, schema)
 
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = """ ON CONFLICT (quiz_attempt_id)
                         DO UPDATE SET
                             score = COALESCE(EXCLUDED.score, fact_quiz.score),
@@ -44,4 +44,4 @@ class FactQuiz:
                                 ELSE fact_quiz.end_time
                             END;
                     """
-        self.db.insert_many_records(self.table_name, objects, condition)
+        self.db.insert_many_records(conn, self.table_name, objects, condition)

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class transformFactQuiz:
     def __init__(self):
         self.db = moodle_db
-    
+        self.extractor = DataExtractor()
 
     def _extract_attempt_from_xapi(self, statement) -> tuple:
         """

@@ -15,7 +15,6 @@ class FactActivity:
             time_id VARCHAR(255) ,
             activity_type VARCHAR(255),
             activity_order INT,
-            is_mandatory BOOLEAN ,
             context_id VARCHAR(255) ,
             session_id VARCHAR(255) ,
             CONSTRAINT PK_fact_activity PRIMARY KEY (activity_id, actor_id, time_id),
@@ -26,10 +25,10 @@ class FactActivity:
         
         self.db.create_table(self.table_name, schema)
 
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = """ ON CONFLICT (activity_id, actor_id, time_id)
                         DO NOTHING;
                     """
-        self.db.insert_many_records(self.table_name, objects, condition)
+        self.db.insert_many_records(conn, self.table_name, objects, condition)
 
 

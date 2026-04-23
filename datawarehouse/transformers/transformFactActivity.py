@@ -1,6 +1,7 @@
 import logging
 from utils.dataExtractorUtils import DataExtractor
 from utils.moodle_db_utils import moodle_db
+from urllib.parse import urlparse, parse_qs
 
 
 logger = logging.getLogger(__name__)
@@ -9,7 +10,79 @@ class transformFactActivity:
 
     def __init__(self):
         self.db = moodle_db
-        
+
+    def parse_activity_id(self, url: str):
+        url = url.strip('"')
+
+        parsed = urlparse(url)
+        path_parts = parsed.path.strip('/').split('/')
+        query = parse_qs(parsed.query)
+
+        module = None
+        resource = None
+        primary_id = None
+        attempt_id = None
+        question_id = None
+        chapter_id = None
+
+        # ===== 1. Detect module + resource =====
+        if "mod" in path_parts:
+            idx = path_parts.index("mod")
+            module = path_parts[idx + 1]                  # book
+            resource = path_parts[-1].split('.')[0]       # view
+
+        elif "course" in path_parts:
+            module = "course"
+            resource = path_parts[-1].split('.')[0]         # view / section
+
+        elif "question" in path_parts:
+            module = "quiz"                                 # normalize
+            resource = "question"
+
+        else:
+            # fallback (review.php, etc.)
+            module = "quiz"
+            resource = path_parts[-1].split('.')[0]
+
+        # ===== 2. Extract IDs =====
+        if module == "course":
+            primary_id = query.get("id", [None])[0]
+
+        elif module == "quiz":
+            primary_id = query.get("cmid", query.get("id", [None]))[0]
+            attempt_id = query.get("attempt", [None])[0]
+
+            if resource == "question":
+                question_id = query.get("id", [None])[0]
+
+        elif module == "book":
+            primary_id = query.get("id", [None])[0]
+            chapter_id = query.get("chapterid", [None])[0]
+        else:
+            # forum / resource / assign
+            primary_id = query.get("id", [None])[0]
+
+        # ===== 3. Build activity_id =====
+        if module == "book" and chapter_id:
+            resource = "chapter"
+
+        parts = [module, resource]
+
+        if primary_id:
+            parts.append(str(primary_id))
+
+        if attempt_id:
+            parts.append(str(attempt_id))
+
+        if question_id:
+            parts.append(str(question_id))
+
+        if chapter_id:
+            parts.append(str(chapter_id))
+
+        activity_id = "_".join(parts)
+
+        return activity_id
 
     def transform(self, statement, kwargs = {}):
         
@@ -25,21 +98,7 @@ class transformFactActivity:
             return res
         
 
-        activityId = statement.object.id.split('/')
-        if len(activityId) < 2:
-             return res
-
-        activity = activityId[-2]
-        last_part = activityId[-1]
-        
-        resource = last_part.split('.')[0]
-        
-        if '=' in last_part:
-            idResource = last_part.split('=')[1]
-        else:
-            idResource = last_part
-
-        activity_id = activity + '_' + resource + '_' + idResource
+        activity_id = self.parse_activity_id(statement.object.id)
 
 
         actor_id = None
@@ -84,20 +143,7 @@ class transformFactActivity:
             res.append(activityEl)
             offset = 0
             for el in  statement.context.contextActivities.parent:
-                parentId = el.id.split('/')
-                if len(parentId) < 2:
-                    offset += 1
-                    continue
-                                    
-                parentActivity = parentId[-2]
-                parentLastPart = parentId[-1]
-                parentResource = parentLastPart.split('.')[0]
-                
-                if '=' in parentLastPart:
-                    parentIdResource = parentLastPart.split('=')[1]
-                else:
-                    parentIdResource = parentLastPart
-                parent_activity_id = parentActivity + '_' + parentResource + '_' + parentIdResource
+                parent_activity_id = self.parse_activity_id(el.id)
 
                 parent_activity_type = ""
                 if el.definition:

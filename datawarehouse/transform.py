@@ -1,4 +1,5 @@
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from datawarehouse.models.xAPI_model import Statement
 from datawarehouse.transformers.transformDimActor import transformDimActor
@@ -26,14 +27,53 @@ class DataTransformer:
         self.dim_time_transformer = transformDimTime()
 
 
+
+    def process_statement(self, raw_statement):
+        statement = Statement(**raw_statement)
+        logger.debug(f"Transforming statement with ID: {statement.id}")
+
+        dim_context = self.dim_context_transformer.transform(statement)
+        dim_time = self.dim_time_transformer.transform(statement)
+
+        contextId = dim_context.get("context_id", "")
+   
+
+        kwargs = {
+            "time_id": dim_time.get("time_id", ""),
+            "context_id": contextId
+        }
+
+        dim_interaction = self.dim_interaction_type_transformer.transform(statement, kwargs)
+        interactionId = dim_interaction.get("interaction_id", "")
+        if contextId == "" or contextId == "CTX_0_0_0" or interactionId in ["toured", "enrolled", "imported", "created", "logged in"]:
+            return None
+
+        dim_actor = self.dim_actor_transformer.transform(statement, kwargs)
+        fact_activity = self.fact_activity_transformer.transform(statement, kwargs)
+        fact_statement = self.fact_statement_transformer.transform(statement, kwargs)
+        fact_session = self.fact_session_transformer.transform(statement, kwargs)
+        fact_quiz = self.fact_quiz_transformer.transform(statement, kwargs)
+        fact_question = self.fact_question_transformer.transform(statement, kwargs)
+
+        return {
+            "dim_context": dim_context,
+            "dim_time": dim_time,
+            "dim_actor": dim_actor,
+            "dim_interaction_type": dim_interaction,
+            "fact_activity": fact_activity,
+            "fact_statement": fact_statement,
+            "fact_session": fact_session,
+            "fact_quiz": fact_quiz,
+            "fact_question": fact_question
+        }
+
+
     def transform(self, raw_statements):
         logger.info("Starting data transformation process")
         transformed_statements = {
             "dim_interaction_type": [],
             "dim_time": [],
-            "bridge_hierarchy_activity": [],
             "dim_actor": [],
-            "dim_activity": [],
             "dim_context": [],
             "fact_activity": [],
             "fact_statement": [],
@@ -41,63 +81,27 @@ class DataTransformer:
             "fact_quiz": [],
             "fact_question": []
         }
-        for raw_statement in raw_statements:
-            statement = Statement(**raw_statement)
-            logger.debug(f"Transforming statement with ID: {statement.id}")
 
-            dim_context = self.dim_context_transformer.transform(statement)
-            dim_time = self.dim_time_transformer.transform(statement)
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            results = list(executor.map(self.process_statement, raw_statements))
 
-            contextId = dim_context.get("context_id", "")
-   
-
-            kwargs = {
-                "time_id": dim_time.get("time_id", ""),
-                "context_id": contextId
-            }
-
-            dim_interaction = self.dim_interaction_type_transformer.transform(statement, kwargs)
-            interactionId = dim_interaction.get("interaction_id", "")
-            if contextId == "" or contextId == "CTX_0_0_0" or interactionId in ["toured", "enrolled"]:
+        for res in results:
+            if not res:
                 continue
 
-            dim_actor = self.dim_actor_transformer.transform(statement, kwargs)
-            fact_activity = self.fact_activity_transformer.transform(statement, kwargs)
-            fact_statement = self.fact_statement_transformer.transform(statement, kwargs)
-            fact_session = self.fact_session_transformer.transform(statement, kwargs)
-            fact_quiz = self.fact_quiz_transformer.transform(statement, kwargs)
-            fact_question = self.fact_question_transformer.transform(statement, kwargs)
+            transformed_statements["dim_context"].append(res["dim_context"])
+            transformed_statements["dim_time"].append(res["dim_time"])
+            transformed_statements["dim_actor"].append(res["dim_actor"])
+            transformed_statements["dim_interaction_type"].append(res["dim_interaction_type"])
+            transformed_statements["fact_activity"].extend(res["fact_activity"])
+            transformed_statements["fact_statement"].append(res["fact_statement"])
 
-            
-            transformed_statements["dim_context"].append(dim_context)
-            transformed_statements["dim_time"].append(dim_time)
-            transformed_statements["dim_actor"].append(dim_actor)
-            transformed_statements["dim_interaction_type"].append(dim_interaction)
-            transformed_statements["fact_activity"].extend(fact_activity)
-            transformed_statements["fact_statement"].append(fact_statement)
-            if fact_session:
-                transformed_statements["fact_session"].append(fact_session)
-            if fact_quiz:
-                transformed_statements["fact_quiz"].append(fact_quiz)
-            if fact_question:
-                transformed_statements["fact_question"].append(fact_question)
-                # Ensure parent quiz exists (Rich Upsert)
-                # Create quiz record with NULL scores - the upsert logic will preserve
-                # existing scores from "completed" statements
-                transformed_statements["fact_quiz"].append({
-                    "quiz_attempt_id": fact_question.get("quiz_attempt_id"),
-                    "quiz_id": fact_question.get("quiz_id"),
-                    "attempt_no": fact_question.get("attempt_no"),
-                    "actor_id": dim_actor.get("actor_id"),
-                    "start_time": fact_question.get("start_time"),
-                    "end_time": fact_question.get("start_time"),
-                    "score": None,  # Will not overwrite existing scores (COALESCE in upsert)
-                    "duration": None,
-                    "completion_status": None,
-                    "isSucceed": None,
-                    "time_id": kwargs.get("time_id", ""),
-                    "context_id": kwargs.get("context_id", "")
-                })
+            if res["fact_session"]:
+                transformed_statements["fact_session"].append(res["fact_session"])
+            if res["fact_quiz"]:
+                transformed_statements["fact_quiz"].append(res["fact_quiz"])
+            if res["fact_question"]:
+                transformed_statements["fact_question"].append(res["fact_question"])
 
         # Post-process: calculate session_duration from first to last event per session
         if transformed_statements["fact_session"]:

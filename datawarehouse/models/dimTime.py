@@ -21,6 +21,6 @@ class DimTime:
         
         self.db.create_table(self.table_name, schema)
 
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = """ON CONFLICT (time_id) DO NOTHING"""
-        self.db.insert_many_records(self.table_name, objects, condition)
+        self.db.insert_many_records(conn, self.table_name, objects, condition)    

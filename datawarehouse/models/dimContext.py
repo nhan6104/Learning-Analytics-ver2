@@ -19,7 +19,7 @@ class DimContext:
         
         self.db.create_table(self.table_name, schema)
         
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = """ ON CONFLICT (context_id)
                         DO UPDATE SET
                             course_id = EXCLUDED.course_id,
@@ -27,5 +27,5 @@ class DimContext:
                             learning_path_id = EXCLUDED.learning_path_id,
                             resource_id = EXCLUDED.resource_id;
                     """
-        self.db.insert_many_records(self.table_name, objects, condition)
+        self.db.insert_many_records(conn, self.table_name, objects, condition)
     

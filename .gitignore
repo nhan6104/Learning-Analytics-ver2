@@ -118,7 +118,7 @@ env.bak/
 venv.bak/
 
 # Environment variables
-ca.pem
+*.pem
 
 # Spyder project settings
 .spyderproject

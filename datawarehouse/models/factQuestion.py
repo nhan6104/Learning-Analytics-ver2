@@ -23,7 +23,7 @@ class FactQuestion:
         
         self.db.create_table(self.table_name, schema)
 
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = """ ON CONFLICT (question_id, quiz_attempt_id)
                         DO UPDATE SET
                             selected_answer = COALESCE(EXCLUDED.selected_answer, fact_question.selected_answer),
@@ -32,4 +32,4 @@ class FactQuestion:
                             start_time = COALESCE(EXCLUDED.start_time, fact_question.start_time),
                             attempt_no = COALESCE(EXCLUDED.attempt_no, fact_question.attempt_no)
                     """
-        self.db.insert_many_records(self.table_name, objects, condition) 
+        self.db.insert_many_records(conn, self.table_name, objects, condition) 

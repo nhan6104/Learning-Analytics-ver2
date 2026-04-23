@@ -16,6 +16,6 @@ class DimActor:
         
         self.db.create_table(self.table_name, schema)
 
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = "ON CONFLICT (actor_id) DO UPDATE SET actor_name = EXCLUDED.actor_name;"
-        self.db.insert_many_records(self.table_name, objects, condition)
+        self.db.insert_many_records(conn, self.table_name, objects, condition)

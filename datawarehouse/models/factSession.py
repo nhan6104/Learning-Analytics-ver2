@@ -27,7 +27,7 @@ class FactSession:
         
         self.db.create_table(self.table_name, schema)
 
-    def insert_many_records(self, objects):
+    def insert_many_records(self, conn, objects):
         condition = f"""ON CONFLICT (session_id)
                         DO UPDATE SET
                             start_time = EXCLUDED.start_time,
@@ -35,4 +35,4 @@ class FactSession:
                             session_duration = EXCLUDED.session_duration,
                             context_id = EXCLUDED.context_id;
                     """
-        self.db.insert_many_records(self.table_name, objects, condition)
+        self.db.insert_many_records(conn, self.table_name, objects, condition)

@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import ast
 
 class DataTransformer:
     def __init__(self):
@@ -7,18 +8,20 @@ class DataTransformer:
 
     def arrange_data(self, records):
         unordered_data = []
-        for _, msgs in records.items():
-            for msg in msgs:
-
-                print(msg.value.decode('utf-8')[0])
-
-                if msg.value.decode('utf-8')[0] == '{':
-                    datajson = json.loads(msg.value.decode('utf-8').replace('\'', '\"'))
-                    data = {
-                        "time_stamp": datajson["timestamp"],
-                        "data": json.dumps(datajson)
-                    }
-                    unordered_data.append(data)
+        for msg in records:
+            
+            print((msg.value.decode('utf-8')))
+            if msg.value.decode('utf-8'):
+                raw = msg.value.decode('utf-8')
+                clean_data = ast.literal_eval(raw)
+                print(clean_data)
+                json_str = json.dumps(clean_data)
+                datajson = json.loads(json_str)
+                data = {
+                    "time_stamp": datajson["timestamp"],
+                    "data": json.dumps(datajson)
+                }
+                unordered_data.append(data)
 
         df = pd.DataFrame(unordered_data)
 

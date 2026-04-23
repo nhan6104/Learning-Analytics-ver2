@@ -7,6 +7,19 @@ logger = logging.getLogger(__name__)
 class transformFactQuestion:
     def __init__(self):
         self.db = moodle_db
+        self.extractor = DataExtractor()
+
+    def _generate_quiz_attempt_id(self, statement) -> str:
+        """Generate a unique quiz_attempt_id from registration + quiz cmid"""
+        registration = statement.context.registration if statement.context else "no_reg"
+        cmid = DataExtractor.extract_moodle_module_id(statement.object.id)
+        
+        if cmid:
+            raw = f"{registration}_{cmid}"
+        else:
+            raw = f"{registration}_{statement.object.id}"
+            
+        return str(DataExtractor.normalize_uuid(raw))
 
 
     def _generate_quiz_attempt_id(self, statement) -> str:
@@ -136,9 +149,10 @@ class transformFactQuestion:
         return {
             "question_id": question_id,
             "quiz_attempt_id": quiz_attempt_id,
+            "selected_answer": selected_answer,
+            "is_correct": is_correct,
             "quiz_id": quiz_id,
             "start_time": start_time,
-            "selected_answer": selected_answer,
             "attempt_no": attempt_no,
-            "is_correct": is_correct,
         }
+    

@@ -16,7 +16,7 @@ class transformDimInteractionType:
         v_id = interaction_id.lower()
         
         if any(x in v_id for x in ['launched', 'start']): category = "navigation"
-        elif any(x in v_id for x in ['experienced', 'receive', 'viewed']): category = "learning"
+        elif any(x in v_id for x in ['experienced', 'received', 'viewed']): category = "learning"
         elif any(x in v_id for x in ['answered', 'passed', 'failed']): category = "assessment"
         elif any(x in v_id for x in ['completed', 'uncompleted']): category = "assessment"
 

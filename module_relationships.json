@@ -1,0 +1,1247 @@
+{
+    "nodes": [
+        {
+            "id": "module_32",
+            "title": "About Your Instructor",
+            "metadata": {
+                "type_id": "page_32",
+                "metadata": {
+                    "title": "About Your Instructor",
+                    "introduction": "Meet Dr. [Name] \n[Remove \"Dr.\" if necessary]",
+                    "content": "Double-click to replace image placeholder with a picture of the instructor.\nIn this space, post a brief instructor introduction video or text bio,\n            no longer than three minutes (video) or 100 words (text)."
+                }
+            }
+        },
+        {
+            "id": "module_33",
+            "title": "Office Hours Information",
+            "metadata": {
+                "type_id": "page_33",
+                "metadata": {
+                    "title": "Office Hours Information",
+                    "introduction": "Click here to read about your instructor's office hours.",
+                    "content": "Include information here about virtual office hours. A video conferencing tool like Zoom is highly recommended. Be\n                        sure to post the dates, time and time zone, URL, and any other\n                        meeting ID\n                        necessary for accessing a live session.\nKeep\n                        in mind that virtual office hours are like face-to-face office hours\u2014you are\n                        meeting students one-on-one. If you are using video conferencing\n                        software, be sure to enable the \"waiting room\" feature so students are\n                        aware when you are in a session.\nInclude your phone number if you would like to give students the option to call you by appointment.\nExample text:\nI will be available for virtual office hours each week at the times below:\nMondays 9:00 a.m.\u201310:00 a.m. CST [Be sure to include time zone]\nWednesdays 2:30 p.m.\u20134:30 p.m. CST\nThursdays 5:00 p.m.\u20136:00 p.m. CST\nDuring these times, you can ask about your grades, assignments, or content. You can use a webcam, microphone, or the chat feature to communicate. You do not have to use video.\nYou may also email me to set up an individual appointment at\n[\nyouremail@school.edu]\n.\n[Link text with email address.]\nOnce you have added the preferred communication\n                        activity, delete all red text."
+                }
+            }
+        },
+        {
+            "id": "module_34",
+            "title": "Instructor Collaboration Forum",
+            "metadata": {
+                "type_id": "forum_34",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_35",
+            "title": "Technical Support",
+            "metadata": {
+                "type_id": "page_35",
+                "metadata": {
+                    "title": "Technical Support",
+                    "introduction": "See description.",
+                    "content": "Adopting institution should provide learners information such as how to use the tools and features of the LMS and and how to get help desk support. Add information on how to receive assistance with Pressbooks, for example:\nTo receive help desk support with Pressbooks, use the contact on the\nHelp Page\non LOUIS' Pressbooks instance."
+                }
+            }
+        },
+        {
+            "id": "module_36",
+            "title": "Accessibility Policies and Services",
+            "metadata": {
+                "type_id": "page_36",
+                "metadata": {
+                    "title": "Accessibility Policies and Services",
+                    "introduction": "See description.",
+                    "content": "Adopting institutions should include accessibility policies or statements to indicate the availability of services and accommodations. Considerations include\nProviding a link to the institution's accessibility policy\nSharing contact information for the Office of Disability Services.\nProviding a link to the LMS accessibility policy (ex.,\nMoodle Accessibility Policy\n)\nPressbooks Accessibility\nProviding links to\u00a0accessibility information for any multimedia sources used (e.g., YouTube)"
+                }
+            }
+        },
+        {
+            "id": "module_37",
+            "title": "Academic Support Services",
+            "metadata": {
+                "type_id": "page_37",
+                "metadata": {
+                    "title": "Academic Support Services",
+                    "introduction": "See description.",
+                    "content": "Provide a link and/or instructions on availability of and access to resources for students to help them succeed in the course."
+                }
+            }
+        },
+        {
+            "id": "module_38",
+            "title": "Student Services and Resources",
+            "metadata": {
+                "type_id": "page_38",
+                "metadata": {
+                    "title": "Student Services and Resources",
+                    "introduction": "See description.",
+                    "content": "Provide a description of and, where possible, links to student support services at the institution. Services could include: advising, financial aid, mental health, veteran's, and career."
+                }
+            }
+        },
+        {
+            "id": "module_39",
+            "title": "Data and Privacy Policies",
+            "metadata": {
+                "type_id": "page_39",
+                "metadata": {
+                    "title": "Data and Privacy",
+                    "introduction": "See description",
+                    "content": "Adopting institution should provide learners information about data and privacy. Considerations include:\nProviding links to the institution's data retention and website privacy policies\nProviding a link to the LMS privacy policy (ex.,\nMoodle Privacy Policy\n)\nPressbooks Privacy Policy\nProviding links to\u00a0privacy information for any multimedia sources used (e.g., YouTube)"
+                }
+            }
+        },
+        {
+            "id": "module_40",
+            "title": "Course Template Implementation Guidelines",
+            "metadata": {
+                "type_id": "page_40",
+                "metadata": {
+                    "title": "FOR INSTRUCTORS: Important Guidelines for Using This Template",
+                    "introduction": "PLEASE READ: This page contains information about some best practices for using this template.",
+                    "content": "The information on this page applies throughout this template.\nA Note on the Activities and Resources in This Template\nThe\n                        activities in this template are examples that you may choose to use in\n                        your course. You do not need to use all of these, so you can delete the\n                        items you will not be using. You may also choose to use different\n                        activities in addition to or instead of these activities. We have\n                        configured some settings for best\n                        practices and accessibility, but some settings like timing, number of\n                        tries, and due dates are left to your discretion.\nIf you use other types of resources or learning activities in your course beside the ones below,\nadd them by clicking \"Add activity or resource\" at the bottom of this module. Regardless of activity or resource type, maintain online teaching best practices\nby:\naligning the resource or activity to the module learning objectives\nwriting detailed instructions for activities and context for resources\nincluding helpful information about grading and submission, such as rubrics and examples\nUsing Publisher Resources and Activities\nIf you are\n                        assigning third-party publisher activities and resources that are\n                        accessed through links, a plug-in, or an external tool, create a label\nin each module\nwith the following text:\nModule\nX\nResources and Activities\nYou will find the following resources and activities in this module at the\n[Publisher Name]\nwebsite. Click on the links below to access or complete each item.\nBeneath this label, do the following:\ncreate links, external tools, or placeholder activities (if not\n                                    integrated) for each resource and activity students must complete at the\n                                    third-party site. This will place them in the Moodle grade book.\nset completion criteria for each item\nin the description for each, give detailed information about how the item supports the objectives and outcomes. Provide\n                                    context and situate the activity in the module/course. State the\n                                    relevance to the learning experience and indicate whether it is\n                                    mandatory or supplemental.\nIf\n                        all resources/content is at publisher site, hide or delete any activities that aren't used when you add deep\n                        links/placeholder activities.\nAdd the following information in the description for each activity:\nThe\n[resource/activity name]\nwill help you review\n[topics]\nfrom this module. This resource/activity addresses\ncourse outcome\n(s) X\nand module learning objective\n(s) X\n[Linked to outcomes/objectives chapter in syllabus]\n."
+                }
+            }
+        },
+        {
+            "id": "module_41",
+            "title": "Course Template Interest and Adoption Survey",
+            "metadata": {
+                "type_id": "url_41",
+                "metadata": {
+                    "title": "Interest/Adoption Survey"
+                }
+            }
+        },
+        {
+            "id": "module_42",
+            "title": "Instructor Ancillary Materials",
+            "metadata": {
+                "type_id": "folder_42",
+                "metadata": {
+                    "type": "folder",
+                    "name": "Ancillary Materials",
+                    "introduction": "This is a space for instructor-facing ancillary materials.",
+                    "path": "Database assignments using Access",
+                    "files": [
+                        {
+                            "filename": "Module Access 1 Assignment",
+                            "filetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            "author": "Brandy Burbante"
+                        },
+                        {
+                            "filename": "Module Access 2 Assignment",
+                            "filetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            "author": "Brandy Burbante"
+                        },
+                        {
+                            "filename": "Module Access 3 Assignment",
+                            "filetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            "author": "Brandy Burbante"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "module_43",
+            "title": "Quality Matters Review and Amendments",
+            "metadata": {
+                "type_id": "resource_43",
+                "metadata": {
+                    "title": "2022 Quality Matters Review and Amendments",
+                    "introduction": "",
+                    "fileType": "application/pdf",
+                    "author": "Elizabeth Kelly"
+                }
+            }
+        },
+        {
+            "id": "module_44",
+            "title": "Teacher Review and Amendments",
+            "metadata": {
+                "type_id": "resource_44",
+                "metadata": {
+                    "title": "2022 Teacher Review and Amendments",
+                    "introduction": "",
+                    "fileType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "author": "Elizabeth Kelly"
+                }
+            }
+        },
+        {
+            "id": "module_45",
+            "title": "Instructor Guidelines for Testing",
+            "metadata": {
+                "type_id": "page_45",
+                "metadata": {
+                    "title": "For Instructors: Testing",
+                    "introduction": "",
+                    "content": "For the quizzes and tests, instructors may choose questions from one or more question banks to test students and set point values.\nInstructors may also create their own quiz questions based on the content in the Pressbooks textbook.\nThe test requirements are left to the adopting instructor and should meet any institutional or departmental requirements that may apply, including grade weights, time limits, any proctoring requirements, etc.\nIf you will require that your online tests be proctored, either by a live proctor, via a proctoring service such as Honor Lock, ProctorU, etc., or by using a lockdown browser, be sure to provide all necessary information and resources that students may need, including any fees for online proctoring services as required by your institution."
+                }
+            }
+        },
+        {
+            "id": "module_46",
+            "title": "Course News and Announcements",
+            "metadata": {
+                "type_id": "forum_46",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_47",
+            "title": "Course Syllabus and Schedule (Document)",
+            "metadata": {
+                "type_id": "resource_47",
+                "metadata": {
+                    "title": "Course Syllabus and Schedule",
+                    "introduction": "",
+                    "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "author": "Brandy Burbante"
+                }
+            }
+        },
+        {
+            "id": "module_48",
+            "title": "Course Syllabus and Schedule (Web Link)",
+            "metadata": {
+                "type_id": "url_48",
+                "metadata": {
+                    "title": "Course Syllabus and Schedule"
+                }
+            }
+        },
+        {
+            "id": "module_49",
+            "title": "Course Textbook: Computer Applications",
+            "metadata": {
+                "type_id": "url_49",
+                "metadata": {
+                    "title": "Textbook: Computer Applications (Pressbooks)"
+                }
+            }
+        },
+        {
+            "id": "module_50",
+            "title": "Student Introductions Forum",
+            "metadata": {
+                "type_id": "forum_50",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_51",
+            "title": "Student Q&A Forum",
+            "metadata": {
+                "type_id": "forum_51",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_52",
+            "title": "Operating Systems Concepts",
+            "metadata": {
+                "type_id": "url_52",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Operating Systems"
+                }
+            }
+        },
+        {
+            "id": "module_53",
+            "title": "Operating Systems Hardware Assignment",
+            "metadata": {
+                "type_id": "assign_53",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_54",
+            "title": "Operating Systems Software Concepts",
+            "metadata": {
+                "type_id": "url_54",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Operating Systems"
+                }
+            }
+        },
+        {
+            "id": "module_55",
+            "title": "Operating Systems Software Assignment",
+            "metadata": {
+                "type_id": "assign_55",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_56",
+            "title": "Operating Systems Security and Email",
+            "metadata": {
+                "type_id": "url_56",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Operating Systems"
+                }
+            }
+        },
+        {
+            "id": "module_57",
+            "title": "Operating Systems Security and Email Assignment",
+            "metadata": {
+                "type_id": "assign_57",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_58",
+            "title": "Word Processing Concepts",
+            "metadata": {
+                "type_id": "url_58",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Word Processing"
+                }
+            }
+        },
+        {
+            "id": "module_59",
+            "title": "Creating a Flyer with Word Processing Software",
+            "metadata": {
+                "type_id": "assign_59",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_60",
+            "title": "Word Processing Formatting and Editing",
+            "metadata": {
+                "type_id": "url_60",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Word Processing"
+                }
+            }
+        },
+        {
+            "id": "module_61",
+            "title": "Designing a Newsletter with Word Processing Software",
+            "metadata": {
+                "type_id": "assign_61",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_62",
+            "title": "Word Processing Object Insertion",
+            "metadata": {
+                "type_id": "url_62",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Word Processing"
+                }
+            }
+        },
+        {
+            "id": "module_63",
+            "title": "Composing a Professional Letter",
+            "metadata": {
+                "type_id": "assign_63",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_64",
+            "title": "Advanced Word Processing Features",
+            "metadata": {
+                "type_id": "url_64",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Word Processing"
+                }
+            }
+        },
+        {
+            "id": "module_65",
+            "title": "Creating a Professional Resume",
+            "metadata": {
+                "type_id": "assign_65",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_66",
+            "title": "Presentation Software Fundamentals",
+            "metadata": {
+                "type_id": "url_66",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Presentation Software"
+                }
+            }
+        },
+        {
+            "id": "module_67",
+            "title": "Creating and Editing Presentations Assignment",
+            "metadata": {
+                "type_id": "assign_67",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_68",
+            "title": "Enhancing Presentations",
+            "metadata": {
+                "type_id": "url_68",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Presentation Software"
+                }
+            }
+        },
+        {
+            "id": "module_69",
+            "title": "Presentation Enhancement Assignment",
+            "metadata": {
+                "type_id": "assign_69",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_70",
+            "title": "Adding Media and Animation to Presentations",
+            "metadata": {
+                "type_id": "url_70",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Presentation Software"
+                }
+            }
+        },
+        {
+            "id": "module_71",
+            "title": "Presentation Media and Animation Assignment",
+            "metadata": {
+                "type_id": "assign_71",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_72",
+            "title": "Spreadsheet Software Fundamentals",
+            "metadata": {
+                "type_id": "url_72",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Spreadsheets"
+                }
+            }
+        },
+        {
+            "id": "module_73",
+            "title": "Spreadsheet Application Assignment",
+            "metadata": {
+                "type_id": "assign_73",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_74",
+            "title": "Introduction to Database Objects",
+            "metadata": {
+                "type_id": "url_74",
+                "metadata": {
+                    "title": "Pressbooks Chapter: An Intro to Databases"
+                }
+            }
+        },
+        {
+            "id": "module_75",
+            "title": "Creating Database Objects in MS Access",
+            "metadata": {
+                "type_id": "assign_75",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_76",
+            "title": "MS Access Tutorials: Database Objects",
+            "metadata": {
+                "type_id": "url_76",
+                "metadata": {
+                    "title": "MS Access Walkthrough and Tutorials by Microsoft Point (c)"
+                }
+            }
+        },
+        {
+            "id": "module_77",
+            "title": "MS Access Tutorials: Database Objects",
+            "metadata": {
+                "type_id": "url_77",
+                "metadata": {
+                    "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)"
+                }
+            }
+        },
+        {
+            "id": "module_78",
+            "title": "MS Access Practice: Database Objects",
+            "metadata": {
+                "type_id": "url_78",
+                "metadata": {
+                    "title": "Video - MS Access Practice 1"
+                }
+            }
+        },
+        {
+            "id": "module_79",
+            "title": "Querying Database Objects",
+            "metadata": {
+                "type_id": "url_79",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Database Objects and Querying a Database"
+                }
+            }
+        },
+        {
+            "id": "module_80",
+            "title": "Querying a Database in MS Access",
+            "metadata": {
+                "type_id": "assign_80",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_81",
+            "title": "MS Access Tutorials: Querying Databases",
+            "metadata": {
+                "type_id": "url_81",
+                "metadata": {
+                    "title": "MS Access Walkthrough and Tutorials by Microsoft (c)"
+                }
+            }
+        },
+        {
+            "id": "module_82",
+            "title": "MS Access Tutorials: Querying Databases",
+            "metadata": {
+                "type_id": "url_82",
+                "metadata": {
+                    "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)"
+                }
+            }
+        },
+        {
+            "id": "module_83",
+            "title": "MS Access Practice: Querying Databases",
+            "metadata": {
+                "type_id": "url_83",
+                "metadata": {
+                    "title": "Video - MS Access Practice 2"
+                }
+            }
+        },
+        {
+            "id": "module_84",
+            "title": "MS Access Practice: Advanced Querying",
+            "metadata": {
+                "type_id": "url_84",
+                "metadata": {
+                    "title": "Video - MS Access Practice 3"
+                }
+            }
+        },
+        {
+            "id": "module_85",
+            "title": "Creating Database Reports and Forms",
+            "metadata": {
+                "type_id": "url_85",
+                "metadata": {
+                    "title": "Pressbooks Chapter: Creating Reports and Forms"
+                }
+            }
+        },
+        {
+            "id": "module_86",
+            "title": "Creating Reports and Forms in MS Access",
+            "metadata": {
+                "type_id": "assign_86",
+                "metadata": {}
+            }
+        },
+        {
+            "id": "module_87",
+            "title": "MS Access Tutorials: Reports and Forms",
+            "metadata": {
+                "type_id": "url_87",
+                "metadata": {
+                    "title": "MS Access Walkthrough and Tutorials by Microsoft (c)"
+                }
+            }
+        },
+        {
+            "id": "module_88",
+            "title": "MS Access Tutorials: Reports and Forms",
+            "metadata": {
+                "type_id": "url_88",
+                "metadata": {
+                    "title": "MS Access Walkthrough and Tutorials by Tutorials Point (c)"
+                }
+            }
+        },
+        {
+            "id": "module_89",
+            "title": "MS Access Practice: Reports and Forms",
+            "metadata": {
+                "type_id": "url_89",
+                "metadata": {
+                    "title": "Video - MS Access Practice 4 Walkthrough CC"
+                }
+            }
+        },
+        {
+            "id": "section_21",
+            "title": "Instructor Information"
+        },
+        {
+            "id": "section_22",
+            "title": "Learner Support"
+        },
+        {
+            "id": "section_23",
+            "title": "Instructor Course Template Resources"
+        },
+        {
+            "id": "section_24",
+            "title": "Course Orientation"
+        },
+        {
+            "id": "section_25",
+            "title": "Operating Systems Hardware"
+        },
+        {
+            "id": "section_26",
+            "title": "Operating Systems Software"
+        },
+        {
+            "id": "section_27",
+            "title": "Operating Systems Security & Email"
+        },
+        {
+            "id": "section_28",
+            "title": "Word Processing Concepts"
+        },
+        {
+            "id": "section_29",
+            "title": "Word Processing Formatting & Editing"
+        },
+        {
+            "id": "section_30",
+            "title": "Word Processing Object Insertion"
+        },
+        {
+            "id": "section_31",
+            "title": "Advanced Word Processing Features"
+        },
+        {
+            "id": "section_32",
+            "title": "Presentation Creation & Editing"
+        },
+        {
+            "id": "section_33",
+            "title": "Presentation Enhancement"
+        },
+        {
+            "id": "section_34",
+            "title": "Presentation Media & Animation"
+        },
+        {
+            "id": "section_35",
+            "title": "Spreadsheets"
+        },
+        {
+            "id": "section_36",
+            "title": "Database Objects"
+        },
+        {
+            "id": "section_37",
+            "title": "Database Querying"
+        },
+        {
+            "id": "section_38",
+            "title": "Database Reports & Forms"
+        }
+    ],
+    "edges": [
+        {
+            "from": "section_21",
+            "to": "module_32",
+            "relation": ""
+        },
+        {
+            "from": "section_21",
+            "to": "module_33",
+            "relation": ""
+        },
+        {
+            "from": "section_21",
+            "to": "module_34",
+            "relation": ""
+        },
+        {
+            "from": "section_22",
+            "to": "module_35",
+            "relation": ""
+        },
+        {
+            "from": "section_22",
+            "to": "module_36",
+            "relation": ""
+        },
+        {
+            "from": "section_22",
+            "to": "module_37",
+            "relation": ""
+        },
+        {
+            "from": "section_22",
+            "to": "module_38",
+            "relation": ""
+        },
+        {
+            "from": "section_22",
+            "to": "module_39",
+            "relation": ""
+        },
+        {
+            "from": "section_23",
+            "to": "module_40",
+            "relation": ""
+        },
+        {
+            "from": "section_23",
+            "to": "module_40",
+            "relation": ""
+        },
+        {
+            "from": "section_23",
+            "to": "module_40",
+            "relation": ""
+        },
+        {
+            "from": "section_23",
+            "to": "module_40",
+            "relation": ""
+        },
+        {
+            "from": "section_23",
+            "to": "module_40",
+            "relation": ""
+        },
+        {
+            "from": "section_24",
+            "to": "module_47",
+            "relation": ""
+        },
+        {
+            "from": "section_24",
+            "to": "module_48",
+            "relation": ""
+        },
+        {
+            "from": "section_24",
+            "to": "module_47",
+            "relation": ""
+        },
+        {
+            "from": "section_24",
+            "to": "module_48",
+            "relation": ""
+        },
+        {
+            "from": "section_24",
+            "to": "module_46",
+            "relation": ""
+        },
+        {
+            "from": "section_24",
+            "to": "module_50",
+            "relation": ""
+        },
+        {
+            "from": "section_25",
+            "to": "module_49",
+            "relation": ""
+        },
+        {
+            "from": "section_25",
+            "to": "module_52",
+            "relation": ""
+        },
+        {
+            "from": "section_26",
+            "to": "module_52",
+            "relation": ""
+        },
+        {
+            "from": "section_26",
+            "to": "module_54",
+            "relation": ""
+        },
+        {
+            "from": "section_27",
+            "to": "module_54",
+            "relation": ""
+        },
+        {
+            "from": "section_27",
+            "to": "module_56",
+            "relation": ""
+        },
+        {
+            "from": "section_28",
+            "to": "module_49",
+            "relation": ""
+        },
+        {
+            "from": "section_28",
+            "to": "module_58",
+            "relation": ""
+        },
+        {
+            "from": "section_29",
+            "to": "module_60",
+            "relation": ""
+        },
+        {
+            "from": "section_30",
+            "to": "module_62",
+            "relation": ""
+        },
+        {
+            "from": "section_31",
+            "to": "module_64",
+            "relation": ""
+        },
+        {
+            "from": "section_32",
+            "to": "module_49",
+            "relation": ""
+        },
+        {
+            "from": "section_32",
+            "to": "module_66",
+            "relation": ""
+        },
+        {
+            "from": "section_33",
+            "to": "module_68",
+            "relation": ""
+        },
+        {
+            "from": "section_34",
+            "to": "module_70",
+            "relation": ""
+        },
+        {
+            "from": "section_35",
+            "to": "module_49",
+            "relation": ""
+        },
+        {
+            "from": "section_35",
+            "to": "module_72",
+            "relation": ""
+        },
+        {
+            "from": "section_36",
+            "to": "module_49",
+            "relation": ""
+        },
+        {
+            "from": "section_36",
+            "to": "module_74",
+            "relation": ""
+        },
+        {
+            "from": "section_36",
+            "to": "module_74",
+            "relation": ""
+        },
+        {
+            "from": "section_36",
+            "to": "module_76",
+            "relation": ""
+        },
+        {
+            "from": "section_36",
+            "to": "module_77",
+            "relation": ""
+        },
+        {
+            "from": "section_36",
+            "to": "module_76",
+            "relation": ""
+        },
+        {
+            "from": "section_36",
+            "to": "module_77",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_79",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_79",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_83",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_81",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_82",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_81",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_82",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_81",
+            "relation": ""
+        },
+        {
+            "from": "section_37",
+            "to": "module_82",
+            "relation": ""
+        },
+        {
+            "from": "section_38",
+            "to": "module_85",
+            "relation": ""
+        },
+        {
+            "from": "section_38",
+            "to": "module_85",
+            "relation": ""
+        },
+        {
+            "from": "section_38",
+            "to": "module_87",
+            "relation": ""
+        },
+        {
+            "from": "section_38",
+            "to": "module_88",
+            "relation": ""
+        },
+        {
+            "from": "section_38",
+            "to": "module_87",
+            "relation": ""
+        },
+        {
+            "from": "section_38",
+            "to": "module_88",
+            "relation": ""
+        },
+        {
+            "from": "module_40",
+            "to": "module_41",
+            "relation": "supports",
+            "confidence_score": 0.75
+        },
+        {
+            "from": "module_40",
+            "to": "module_42",
+            "relation": "supports",
+            "confidence_score": 0.6
+        },
+        {
+            "from": "module_40",
+            "to": "module_43",
+            "relation": "supports",
+            "confidence_score": 0.6
+        },
+        {
+            "from": "module_40",
+            "to": "module_44",
+            "relation": "supports",
+            "confidence_score": 0.6
+        },
+        {
+            "from": "module_40",
+            "to": "module_45",
+            "relation": "supports",
+            "confidence_score": 0.7
+        },
+        {
+            "from": "module_47",
+            "to": "module_49",
+            "relation": "supports",
+            "confidence_score": 0.7
+        },
+        {
+            "from": "module_48",
+            "to": "module_49",
+            "relation": "supports",
+            "confidence_score": 0.7
+        },
+        {
+            "from": "module_47",
+            "to": "module_51",
+            "relation": "supports",
+            "confidence_score": 0.7
+        },
+        {
+            "from": "module_48",
+            "to": "module_51",
+            "relation": "supports",
+            "confidence_score": 0.7
+        },
+        {
+            "from": "module_49",
+            "to": "module_52",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_52",
+            "to": "module_53",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_52",
+            "to": "module_54",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_54",
+            "to": "module_55",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_54",
+            "to": "module_56",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_56",
+            "to": "module_57",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_49",
+            "to": "module_58",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_58",
+            "to": "module_59",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_60",
+            "to": "module_61",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_62",
+            "to": "module_63",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_64",
+            "to": "module_65",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.85
+        },
+        {
+            "from": "module_49",
+            "to": "module_66",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_66",
+            "to": "module_67",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_68",
+            "to": "module_69",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_70",
+            "to": "module_71",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_49",
+            "to": "module_72",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_72",
+            "to": "module_73",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_49",
+            "to": "module_74",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_74",
+            "to": "module_75",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_74",
+            "to": "module_78",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_76",
+            "to": "module_75",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_77",
+            "to": "module_75",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_76",
+            "to": "module_78",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_77",
+            "to": "module_78",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_79",
+            "to": "module_80",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_79",
+            "to": "module_83",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_83",
+            "to": "module_84",
+            "relation": "extends",
+            "confidence_score": 0.9
+        },
+        {
+            "from": "module_81",
+            "to": "module_80",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_82",
+            "to": "module_80",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_81",
+            "to": "module_83",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_82",
+            "to": "module_83",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_81",
+            "to": "module_84",
+            "relation": "supports",
+            "confidence_score": 0.75
+        },
+        {
+            "from": "module_82",
+            "to": "module_84",
+            "relation": "supports",
+            "confidence_score": 0.75
+        },
+        {
+            "from": "module_85",
+            "to": "module_86",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_85",
+            "to": "module_89",
+            "relation": "prerequisite_of",
+            "confidence_score": 0.95
+        },
+        {
+            "from": "module_87",
+            "to": "module_86",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_88",
+            "to": "module_86",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_87",
+            "to": "module_89",
+            "relation": "supports",
+            "confidence_score": 0.8
+        },
+        {
+            "from": "module_88",
+            "to": "module_89",
+            "relation": "supports",
+            "confidence_score": 0.8
+        }
+    ]
+}
