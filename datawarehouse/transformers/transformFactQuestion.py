@@ -21,6 +21,19 @@ class transformFactQuestion:
             
         return str(DataExtractor.normalize_uuid(raw))
 
+
+    def _generate_quiz_attempt_id(self, statement) -> str:
+        """Generate a unique quiz_attempt_id from registration + quiz cmid"""
+        registration = statement.context.registration if statement.context else "no_reg"
+        cmid = DataExtractor.extract_moodle_module_id(statement.object.id)
+        
+        if cmid:
+            raw = f"{registration}_{cmid}"
+        else:
+            raw = f"{registration}_{statement.object.id}"
+            
+        return str(DataExtractor.normalize_uuid(raw))
+
     def _get_quiz_metadata(self, cmid, actor_id):
         """Fetch max_score, attempt_no, quiz_id and attempt_id from Moodle"""
         max_score = None
